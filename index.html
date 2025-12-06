@@ -19,9 +19,9 @@ button{padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; back
 button:hover{opacity:0.9;}
 .calendar{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:1rem;}
 .day{padding:10px; border-radius:5px; text-align:center; cursor:pointer; transition:0.3s all;}
-.day.filled{background:#a5d6a7; color:#fff;}   /* hijau */
-.day.missed{background:#ffcdd2; color:#fff;}   /* merah */
-.day.active{background:#4a90e2; color:#fff;}   /* biru */
+.day.filled{background:#a5d6a7; color:#fff;}
+.day.missed{background:#ffcdd2; color:#fff;}
+.day.active{background:#4a90e2; color:#fff;}
 .day:hover{transform:scale(1.05);}
 .inline-form{display:none; background:#fff; padding:1rem; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom:1rem;}
 .indicator{margin-bottom:0.8rem;}
@@ -97,7 +97,7 @@ Kamu mau konsultasi langsung? Yuk ngobrol bareng 🌙✨
 
 <script>
 // ====== Variabel Global ======
-let userName = "";
+let userName = localStorage.getItem('taqwaUserName') || "";
 const calendarEl = document.getElementById('calendar');
 const indicators = [
 {key:'ibadah', question:"Apakah shalat wajib hari ini sudah tertunaikan?"},
@@ -121,194 +121,209 @@ const dailyAyat = [
 
 // ====== Nama ======
 function saveName(){
-const input = document.getElementById('userNameInput').value.trim();
-if(input){
-userName = input;
-document.getElementById('dynamicAyat').textContent = `Halo ${userName}, pilih tanggal untuk mengisi indikator harian 🌙`;
-document.getElementById('dynamicAyat').classList.add('show');
-document.getElementById('userNameInput').value = "";
-updateCalendarHighlight();
-generateRekap();
+    const input = document.getElementById('userNameInput').value.trim();
+    if(input){
+        userName = input;
+        localStorage.setItem('taqwaUserName', userName);
+        document.getElementById('dynamicAyat').textContent = `Halo ${userName}, pilih tanggal untuk mengisi indikator harian 🌙`;
+        document.getElementById('dynamicAyat').classList.add('show');
+        document.getElementById('userNameInput').value = "";
+        generateCalendar();
+        updateCalendarHighlight();
+        generateRekap();
+    }
+}
+
+// ====== Load nama jika ada ======
+if(userName){
+    document.getElementById('dynamicAyat').textContent = `Halo ${userName}, pilih tanggal untuk mengisi indikator harian 🌙`;
+    document.getElementById('dynamicAyat').classList.add('show');
+    generateCalendar();
+    updateCalendarHighlight();
+    generateRekap();
 }
 
 // ====== Kalender ======
 function generateCalendar(){
-for(let i=1;i<=30;i++){
-const day = document.createElement('div');
-day.classList.add('day');
-day.textContent = i;
-day.addEventListener('click', ()=>openInlineForm(i));
-calendarEl.appendChild(day);
-}
-updateCalendarHighlight();
+    calendarEl.innerHTML = "";
+    for(let i=1;i<=30;i++){
+        const day = document.createElement('div');
+        day.classList.add('day');
+        day.textContent = i;
+        day.addEventListener('click', ()=>openInlineForm(i));
+        calendarEl.appendChild(day);
+    }
+    updateCalendarHighlight();
 }
 
 // Update warna kalender
 function updateCalendarHighlight(){
-Array.from(calendarEl.children).forEach(d=>{
-const day = parseInt(d.textContent);
-d.classList.remove('filled','missed','active');
-if(selectedDay===day) d.classList.add('active');
-else if(dailyScores[day]) d.classList.add('filled');
-else d.classList.add('missed');
-});
+    Array.from(calendarEl.children).forEach(d=>{
+        const day = parseInt(d.textContent);
+        d.classList.remove('filled','missed','active');
+        if(selectedDay===day) d.classList.add('active');
+        else if(dailyScores[day]) d.classList.add('filled');
+        else d.classList.add('missed');
+    });
 }
 
 // ====== Inline Form ======
 function openInlineForm(day){
-if(!userName){alert("Silakan isi nama terlebih dahulu!"); return;}
-selectedDay = day;
-updateCalendarHighlight();
-const formEl = document.getElementById('inlineForm');
-const container = document.getElementById('indicatorsContainer');
-container.innerHTML = "";
-indicators.forEach((ind, idx)=>{
-const div = document.createElement('div');
-div.classList.add('indicator');
-const label = document.createElement('label');
-label.textContent = ind.question;
-div.appendChild(label);
-for(let s=1;s<=5;s++){
-const btn = document.createElement('button');
-btn.classList.add('scale-btn');
-btn.textContent = s;
-btn.addEventListener('click', ()=>selectScore(day, ind.key, s, div));
-div.appendChild(btn);
-}
-container.appendChild(div);
-});
-
-// Load skor sebelumnya
-if(dailyScores[day]){
-indicators.forEach((ind, idx)=>{
-if(dailyScores[day][ind.key]){
-const btns = container.children[idx].querySelectorAll('.scale-btn');
-btns[dailyScores[day][ind.key]-1].classList.add('selected');
-}
-});
-}
-formEl.style.display='block';
+    if(!userName){ alert("Silakan isi nama terlebih dahulu!"); return; }
+    selectedDay = day;
+    updateCalendarHighlight();
+    const formEl = document.getElementById('inlineForm');
+    const container = document.getElementById('indicatorsContainer');
+    container.innerHTML = "";
+    indicators.forEach((ind, idx)=>{
+        const div = document.createElement('div');
+        div.classList.add('indicator');
+        const label = document.createElement('label');
+        label.textContent = ind.question;
+        div.appendChild(label);
+        for(let s=1; s<=5; s++){
+            const btn = document.createElement('button');
+            btn.classList.add('scale-btn');
+            btn.textContent = s;
+            btn.addEventListener('click', ()=>selectScore(day, ind.key, s, div));
+            div.appendChild(btn);
+        }
+        container.appendChild(div);
+    });
+    if(dailyScores[day]){
+        indicators.forEach((ind, idx)=>{
+            if(dailyScores[day][ind.key]){
+                const btns = container.children[idx].querySelectorAll('.scale-btn');
+                btns[dailyScores[day][ind.key]-1].classList.add('selected');
+            }
+        });
+    }
+    formEl.style.display='block';
 }
 
-// Pilih skor
+// ====== Pilih skor ======
 function selectScore(day, key, score, div){
-if(!dailyScores[day]) dailyScores[day] = {};
-dailyScores[day][key] = score;
-localStorage.setItem('dailyScores', JSON.stringify(dailyScores));
-const btns = div.querySelectorAll('.scale-btn');
-btns.forEach(b=>b.classList.remove('selected'));
-btns[score-1].classList.add('selected');
-updateRadar(day);
-updateAnalysis(day);
-updateCalendarHighlight();
-generateRekap();
+    if(!dailyScores[day]) dailyScores[day] = {};
+    dailyScores[day][key] = score;
+    localStorage.setItem('dailyScores', JSON.stringify(dailyScores));
+    const btns = div.querySelectorAll('.scale-btn');
+    btns.forEach(b=>b.classList.remove('selected'));
+    btns[score-1].classList.add('selected');
+    updateRadar(day);
+    updateAnalysis(day);
+    updateCalendarHighlight();
+    generateRekap();
 }
 
-// Submit form
+// ====== Submit Form ======
 function submitIndicators(){
-document.getElementById('inlineForm').style.display='none';
-selectedDay=null;
-updateCalendarHighlight();
-generateRekap();
+    document.getElementById('inlineForm').style.display='none';
+    selectedDay=null;
+    updateCalendarHighlight();
+    generateRekap();
 }
 
 // ====== Radar Chart ======
 const ctx = document.getElementById('radarChart').getContext('2d');
 const radarChart = new Chart(ctx,{
-type:'radar',
-data:{
-labels: indicators.map(i=>i.key),
-datasets:[{
-label:'Skor Ibadah 1-5',
-data:Array(indicators.length).fill(0),
-backgroundColor:'rgba(74,144,226,0.2)',
-borderColor:'#4a90e2',
-borderWidth:2,
-pointBackgroundColor:'#4a90e2'
-}]
-},
-options:{animation:{duration:600,easing:'easeOutQuad'},scales:{r:{suggestedMin:0,suggestedMax:5}},plugins:{tooltip:{callbacks:{label:function(c){return c.label + ': ' + c.raw + ' 🌙';}}}}}
+    type:'radar',
+    data:{
+        labels: indicators.map(i=>i.key),
+        datasets:[{
+            label:'Skor Ibadah 1-5',
+            data:Array(indicators.length).fill(0),
+            backgroundColor:'rgba(74,144,226,0.2)',
+            borderColor:'#4a90e2',
+            borderWidth:2,
+            pointBackgroundColor:'#4a90e2'
+        }]
+    },
+    options:{animation:{duration:600,easing:'easeOutQuad'},scales:{r:{suggestedMin:0,suggestedMax:5}},plugins:{tooltip:{callbacks:{label:function(c){return c.label + ': ' + c.raw + ' 🌙';}}}}}
 });
 
-// Analisis + ayat
+function updateRadar(day){
+    if(!dailyScores[day]) return;
+    radarChart.data.datasets[0].data = indicators.map(i=>dailyScores[day][i.key] || 0);
+    radarChart.update();
+}
+
+// ====== Analisis ======
 function updateAnalysis(day){
-if(!dailyScores[day]) return;
-const scores = indicators.map(i=>dailyScores[day][i.key] || 0);
-const minScore = Math.min(...scores);
-const minIdx = scores.indexOf(minScore);
-const activity = indicators[minIdx].key;
-const ayat = dailyAyat[day % dailyAyat.length];
-const msg = `🌟 Hari ke-${day} untuk ${userName}, fokus pada "${activity}", ${ayat}`;
-const elem = document.getElementById('dynamicAyat');
-elem.textContent = msg;
-elem.classList.remove('show');
-setTimeout(()=>elem.classList.add('show'),50);
+    if(!dailyScores[day]) return;
+    const scores = indicators.map(i=>dailyScores[day][i.key] || 0);
+    const minScore = Math.min(...scores);
+    const minIdx = scores.indexOf(minScore);
+    const activity = indicators[minIdx].key;
+    const ayat = dailyAyat[day % dailyAyat.length];
+    const msg = `🌟 Hari ke-${day} untuk ${userName}, fokus pada "${activity}", ${ayat}`;
+    const elem = document.getElementById('dynamicAyat');
+    elem.textContent = msg;
+    elem.classList.remove('show');
+    setTimeout(()=>elem.classList.add('show'),50);
 }
 
-// ====== Rekap Mingguan & Bulanan ======
+// ====== Rekap ======
 function generateRekap(){
-let weeklyScores = [];
-let monthlyScores = [];
-for(let w=0; w<4; w++){
-let weekSum = {}; indicators.forEach(i=>weekSum[i.key]=0);
-let weekCount = 0;
-for(let d=w*7+1; d<=Math.min((w+1)*7,30); d++){
-if(dailyScores[d]){
-indicators.forEach(i=>weekSum[i.key]+=dailyScores[d][i.key]);
-weekCount++;
-}
-}
-let weekAvg = {};
-indicators.forEach(i=>weekAvg[i.key] = weekCount>0 ? (weekSum[i.key]/weekCount).toFixed(2) : '-');
-weeklyScores.push(weekAvg);
-}
-// Bulanan
-let monthSum = {}; indicators.forEach(i=>monthSum[i.key]=0);
-let monthCount = 0;
-for(let d=1; d<=30; d++){
-if(dailyScores[d]){
-indicators.forEach(i=>monthSum[i.key]+=dailyScores[d][i.key]);
-monthCount++;
-}
-}
-let monthAvg = {}; indicators.forEach(i=>monthAvg[i.key] = monthCount>0 ? (monthSum[i.key]/monthCount).toFixed(2) : '-');
-monthlyScores = monthAvg;
+    if(!userName) return;
+    let weeklyScores = [];
+    let monthlyScores = [];
+    for(let w=0; w<4; w++){
+        let weekSum = {}; indicators.forEach(i=>weekSum[i.key]=0);
+        let weekCount = 0;
+        for(let d=w*7+1; d<=Math.min((w+1)*7,30); d++){
+            if(dailyScores[d]){
+                indicators.forEach(i=>weekSum[i.key]+=dailyScores[d][i.key]);
+                weekCount++;
+            }
+        }
+        let weekAvg = {};
+        indicators.forEach(i=>weekAvg[i.key] = weekCount>0 ? (weekSum[i.key]/weekCount).toFixed(2) : '-');
+        weeklyScores.push(weekAvg);
+    }
+    let monthSum = {}; indicators.forEach(i=>monthSum[i.key]=0);
+    let monthCount = 0;
+    for(let d=1; d<=30; d++){
+        if(dailyScores[d]){
+            indicators.forEach(i=>monthSum[i.key]+=dailyScores[d][i.key]);
+            monthCount++;
+        }
+    }
+    let monthAvg = {}; indicators.forEach(i=>monthAvg[i.key] = monthCount>0 ? (monthSum[i.key]/monthCount).toFixed(2) : '-');
+    monthlyScores = monthAvg;
 
-// Tabel mingguan
-let weekHTML = `<table><tr><th>Minggu</th>${indicators.map(i=>`<th>${i.key}</th>`).join('')}</tr>`;
-weeklyScores.forEach((w,i)=>{ weekHTML += `<tr><td>${i+1}</td>${indicators.map(ind=>`<td>${w[ind.key]}</td>`).join('')}</tr>`; });
-weekHTML += `</table>`;
-document.getElementById('weeklyTable').innerHTML = weekHTML;
+    let weekHTML = `<table><tr><th>Minggu</th>${indicators.map(i=>`<th>${i.key}</th>`).join('')}</tr>`;
+    weeklyScores.forEach((w,i)=>{ weekHTML += `<tr><td>${i+1}</td>${indicators.map(ind=>`<td>${w[ind.key]}</td>`).join('')}</tr>`; });
+    weekHTML += `</table>`;
+    document.getElementById('weeklyTable').innerHTML = weekHTML;
 
-// Tabel bulanan
-let monthHTML = `<table><tr><th>Bulan</th>${indicators.map(i=>`<th>${i.key}</th>`).join('')}</tr>`;
-monthHTML += `<tr><td>1</td>${indicators.map(ind=>`<td>${monthlyScores[ind.key]}</td>`).join('')}</tr></table>`;
-document.getElementById('monthlyTable').innerHTML = monthHTML;
+    let monthHTML = `<table><tr><th>Bulan</th>${indicators.map(i=>`<th>${i.key}</th>`).join('')}</tr>`;
+    monthHTML += `<tr><td>1</td>${indicators.map(ind=>`<td>${monthlyScores[ind.key]}</td>`).join('')}</tr></table>`;
+    document.getElementById('monthlyTable').innerHTML = monthHTML;
 }
 
-// ====== Export PDF ======
+// ====== PDF ======
 function downloadPDF(){
-const { jsPDF } = window.jspdf;
-html2canvas(document.querySelector('.container')).then(canvas=>{
-const imgData = canvas.toDataURL('image/png');
-const pdf = new jsPDF('p','mm','a4');
-const imgProps = pdf.getImageProperties(imgData);
-const pdfWidth = pdf.internal.pageSize.getWidth();
-const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
-pdf.save(`${userName || 'Raport'}_Taqwameter.pdf`);
-});
+    if(!userName){ alert("Silakan isi nama terlebih dahulu!"); return; }
+    const { jsPDF } = window.jspdf;
+    html2canvas(document.querySelector('.container')).then(canvas=>{
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p','mm','a4');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
+        pdf.save(`${userName}_Taqwameter.pdf`);
+    });
 }
 
 // ====== Share & CTA ======
-function shareWhatsApp(){window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("Lihat progress ibadah saya di Taqwameter! 🌙")}`,'_blank');}
-function shareEmail(){window.open(`mailto:?subject=${encodeURIComponent("Progress Ibadah Saya 🌙")}&body=${encodeURIComponent("Lihat progress ibadah saya di Taqwameter!")}`);}
+function shareWhatsApp(){window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(userName+" progress ibadah saya di Taqwameter! 🌙")}`,'_blank');}
+function shareEmail(){window.open(`mailto:?subject=${encodeURIComponent(userName+" Progress Ibadah 🌙")}&body=${encodeURIComponent("Lihat progress ibadah saya di Taqwameter!")}`);}
 function shareInstagram(){window.open(`https://www.instagram.com/`, '_blank');}
 function shareTikTok(){window.open(`https://www.tiktok.com/`, '_blank');}
-function startConsult(){window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("Assalamu'alaikum, saya ingin konsultasi ibadah melalui Taqwameter 🌙")}`,'_blank');}
+function startConsult(){window.open(`http://api.whatsapp.com/send/?phone=6285717115987`,'_blank');}
 
 // ====== Init ======
-generateCalendar();
 generateRekap();
 </script>
 </body>
