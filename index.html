@@ -1,325 +1,334 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TaqwaMeter — Streak & Daily Recommendations</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  :root{--bg:#f6f7fb;--card:#fff;--muted:#6b7280;--accent:#2563eb;--success:#16a34a}
-  body{font-family:Inter,system-ui,Arial;background:var(--bg);margin:0;padding:18px;display:flex;justify-content:center}
-  .wrap{max-width:880px;width:100%}
-  header{display:flex;gap:12px;align-items:center;margin-bottom:14px}
-  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#fbbf24,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;color:#042627}
-  h1{margin:0;font-size:20px}
-  p.lead{margin:4px 0;color:var(--muted);font-size:13px}
-  .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 22px rgba(2,6,23,0.06);margin-bottom:12px}
-  label{display:block;margin:10px 0 6px;font-weight:600}
-  input[type=range]{width:100%}
-  button.primary{width:100%;padding:12px;border-radius:10px;border:0;background:linear-gradient(90deg,#2563eb,#4f46e5);color:#fff;font-weight:700;cursor:pointer}
-  .small{font-size:13px;color:var(--muted)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:760px){.row{grid-template-columns:1fr}}
-  .meta{display:flex;gap:12px;align-items:center}
-  .pill{background:rgba(2,6,23,0.04);padding:8px 10px;border-radius:999px;font-weight:600}
-  .streak{background:linear-gradient(90deg,#f97316,#f43f5e);color:white;padding:8px 12px;border-radius:999px}
-  .muted{color:var(--muted)}
-  .verse{background:#fff8e5;border-left:4px solid #f59e0b;padding:10px;border-radius:8px;margin-top:10px}
-  .reminder{background:#ecfdf5;border-left:4px solid #10b981;padding:10px;border-radius:8px;margin-top:10px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Taqwameter — Versi Lengkap</title>
+  <!--
+    File ini siap dijadikan index.html untuk GitHub Pages.
+    Cara cepat deploy: buat repo Github, push file ini sebagai index.html ke branch main, lalu aktifkan GitHub Pages -> Source: main (root).
+  -->
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#ffffff; --accent:#2e6b2d; --muted:#64748b;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); margin:0; padding:24px; color:#0f172a}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+    header h1{margin:0;font-size:22px}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 6px 20px rgba(2,6,23,0.06);margin-bottom:16px}
+    .flex{display:flex;gap:12px}
+    .cols{display:grid;grid-template-columns:1fr 360px;gap:12px}
+
+    .question{margin-bottom:14px}
+    .question strong{display:block;margin-bottom:8px}
+    .scale{display:flex;gap:8px}
+    .scale button{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #e6eef3;background:#f8fafc;cursor:pointer;font-weight:600}
+    .scale button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    .primary{background:var(--accent);color:#fff;border:none;padding:12px 16px;border-radius:12px;font-weight:700;cursor:pointer;width:100%}
+    .muted{color:var(--muted);font-size:14px}
+
+    #hasil{font-size:36px;font-weight:800;color:var(--accent);text-align:center}
+    .small{font-size:13px;color:#475569}
+
+    /* streak */
+    .streak{display:flex;align-items:center;gap:12px}
+    .streak .dot{width:12px;height:12px;border-radius:50%;background:var(--accent)}
+
+    /* responsive */
+    @media(max-width:900px){
+      .cols{grid-template-columns:1fr;}
+    }
+
+    /* nice footer */
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    .verse{font-style:italic;padding:8px 12px;border-left:4px solid #e6eef3;background:linear-gradient(90deg,#fbfcfd,#ffffff);border-radius:8px}
+
+    .recommend{background:#f8fafc;border-radius:10px;padding:12px}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo">T</div>
-    <div>
-      <h1>TaqwaMeter</h1>
-      <p class="lead">Refleksi spiritual + streak ibadah + rekomendasi harian (AI-ready)</p>
+  <div class="wrap">
+    <header>
+      <h1>Taqwameter — Versi Lengkap</h1>
+      <div class="muted">Interaktif • Radar chart • Streak ibadah • Rekomendasi amalan</div>
+    </header>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="small">Halo — isi kuisioner singkat ini untuk menilai beberapa indikator spiritual & sosial.</div>
+          <div class="small">Skor disimpan secara lokal di browser (localStorage).</div>
+        </div>
+        <div style="min-width:160px;text-align:right">
+          <div class="small">Streak ibadah (hari berturut-turut)</div>
+          <div class="streak"><div id="streakCount" style="font-weight:800;font-size:20px">0</div><div class="muted">hari</div></div>
+        </div>
+      </div>
     </div>
-    <div style="margin-left:auto" class="meta">
-      <div class="pill small">v1.1</div>
-      <div id="streakPill" class="streak" title="Streak hari berurutan">0 🔥</div>
-    </div>
-  </header>
 
-  <!-- Form / sliders -->
-  <div class="card">
-    <h3 style="margin:0 0 8px 0">Isi indikator (geser untuk nilai)</h3>
-    <p class="small">Nilai 1–5 (1 rendah — 5 tinggi). Setelah selesai klik Hitung.</p>
-
-    <div id="sliders"></div>
-
-    <div style="margin-top:12px">
-      <button class="primary" id="calcBtn">Hitung Skor & Rekomendasi</button>
-    </div>
-  </div>
-
-  <!-- Result -->
-  <div id="resultCard" class="card" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center">
+    <div class="cols">
       <div>
-        <h3 style="margin:0">Hasil TaqwaMeter</h3>
-        <div class="small">Skor > 80: sangat baik • 60-79: stabil • <60: perbaikan</div>
+        <div class="card" id="formCard">
+          <h3>Instrumen Indikator (klik nilai 1–5)</h3>
+          <div class="muted" style="margin-bottom:12px">Berdasarkan literatur pengukuran kesejahteraan spiritual & pembangunan Islam: indikator meliputi ritual, bacaan Al-Qur'an, etika sosial, sedekah, kendali diri, dan keterlibatan komunal.</div>
+
+          <div id="questions"></div>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="primary" id="hitungBtn">Hitung Skor & Simpan</button>
+            <button id="resetBtn" style="padding:10px;border-radius:10px;border:1px solid #e6eef3;background:white;cursor:pointer">Reset</button>
+          </div>
+
+          <div style="margin-top:10px" class="small">Ada kolom "Ayat/Reminder" — bisa diedit sesuai kebutuhan organisasi kamu.</div>
+        </div>
+
+        <div class="card">
+          <h3>Ayat / Reminder Sedekah</h3>
+          <div class="verse" contenteditable id="verse">Bismillahirrahmanirrahim — Ingatlah, sedekah membersihkan harta dan hati. (Ganti ayat ini sesuai pilihan Anda)</div>
+          <div style="margin-top:8px;text-align:right"><button id="saveVerse" style="padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer">Simpan Ayat</button></div>
+        </div>
+
       </div>
-      <div style="text-align:right">
-        <div id="scoreLarge" style="font-size:28px;font-weight:700;color:var(--accent)">-</div>
-        <div id="scoreTag" class="small muted"></div>
-      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Hasil Skor</h3>
+          <div id="hasil">-</div>
+          <p id="note" class="small muted" style="text-align:center"></p>
+
+          <hr style="margin:12px 0">
+
+          <h4>Radar Chart</h4>
+          <canvas id="radarChart" width="320" height="240"></canvas>
+        </div>
+
+        <div class="card recommend">
+          <h4>Rekomendasi Amalan Harian</h4>
+          <ul id="recoList" style="margin:8px 0 0 16px"></ul>
+        </div>
+
+        <div class="card">
+          <h4>Riwayat & Tips</h4>
+          <div class="small" id="historyBox">Belum ada penyimpanan.</div>
+        </div>
+      </aside>
     </div>
 
-    <div style="margin-top:12px">
-      <canvas id="radar" height="220"></canvas>
-    </div>
-
-    <div id="verseBox" class="verse" style="display:none"></div>
-    <div id="reminderBox" class="reminder" style="display:none"></div>
-
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button id="saveBtn" class="primary" style="flex:1">Simpan ke Riwayat</button>
-      <button id="dailyBtn" style="flex:1;padding:12px;border-radius:10px;border:0;background:#f3f4f6;font-weight:700;cursor:pointer">Rekomendasi Harian</button>
-    </div>
-    <div id="dailyCards" style="margin-top:12px"></div>
+    <footer class="muted">File ini siap di-push ke GitHub Pages sebagai <code>index.html</code>. Jika mau saya bantu buatkan repo, bilang ya.</footer>
   </div>
-
-  <!-- History -->
-  <div class="card">
-    <h3 style="margin:0 0 8px 0">Riwayat Pemeriksaan</h3>
-    <div id="historyList" class="small muted">Belum ada riwayat.</div>
-  </div>
-
-  <footer class="small muted">Opsional: aktifkan API untuk rekomendasi AI. Petunjuk di bawah.</footer>
-</div>
 
 <script>
-/* ====== CONFIG ====== */
-const QUESTIONS = [
-  {key:'ibadah', label:'Konsistensi shalat & ibadah wajib'},
-  {key:'quran', label:'Intensitas membaca Qur’an / tadabbur'},
-  {key:'hati', label:'Rasa tawakal & rasa dekat kepada Allah'},
-  {key:'emosi', label:'Manajemen emosi & kesabaran'},
-  {key:'sedekah', label:'Konsistensi sedekah/infak'},
-  {key:'sosial', label:'Silaturahmi & bantuan sosial'},
-  {key:'khushu', label:'Kualitas khusyu dan kekhusyukan shalat'},
-  {key:'dosa', label:'Menjaga dari dosa/rutinitas buruk'},
-  {key:'zikir', label:'Dzikir / doa harian'},
-  {key:'waktu', label:'Manajemen waktu ibadah vs kerja'},
-  {key:'niat', label:'Keikhlasan niat dalam aktivitas'},
-  {key:'semangat', label:'Semangat melakukan kebaikan'}
+// ----- soal indikator (lebih banyak) -----
+const pertanyaan = [
+  {q: "Seberapa konsisten kamu menjaga shalat 5 waktu?", group: 'Ritual'},
+  {q: "Seberapa khusyuk shalatmu (kualitas, bukan cuma hadir)?", group: 'Ritual'},
+  {q: "Seberapa sering kamu membaca/mentadabburi Al-Qur'an dalam seminggu?", group: 'Quran'},
+  {q: "Seberapa sering kamu mengamalkan bacaan Qur'an dalam kehidupan (tadabbur -> amalan)?", group: 'Quran'},
+  {q: "Seberapa sering kamu memberi sedekah dalam sebulan?", group: 'Charity'},
+  {q: "Seberapa mudah kamu menolong tetangga atau orang yang membutuhkan?", group: 'Social'},
+  {q: "Seberapa kuat kamu menghindari perbuatan yang kamu tahu maksiat?", group: 'SelfControl'},
+  {q: "Seberapa mudah kamu mengendalikan emosi saat marah?", group: 'SelfControl'},
+  {q: "Seberapa sering kamu bersyukur (mengucap syukur) atas hal kecil setiap hari?", group: 'Attitude'},
+  {q: "Seberapa terlibat kamu dalam kegiatan masjid/komunitas dalam sebulan?", group: 'Social'},
+  {q: "Seberapa sering kamu meminta maaf ketika menyakiti orang lain (taubat sosial)?", group: 'Ethics'},
+  {q: "Seberapa konsisten kamu membaca zikir pagi/asing (ammaliyah harian)?", group: 'Ritual'},
+  {q: "Seberapa siap kamu membantu korban bencana/mitra kemanusiaan jika ada kesempatan?", group: 'Social'},
+  {q: "Seberapa baik kamu mengelola keuangan pribadi agar bisa berinfaq/sedekah?", group: 'Charity'},
+  {q: "Seberapa sering kamu mengikuti kajian/kelas agama setiap bulan?", group: 'Learning'},
+  {q: "Seberapa sering kamu merenungkan tujuan hidup / muhasabah mingguan?", group: 'Attitude'},
+  {q: "Seberapa sering kamu menahan diri dari gossip/fitnah?", group: 'Ethics'},
+  {q: "Seberapa sering kamu menjaga janji pada orang lain (amanah)?", group: 'Ethics'}
 ];
 
-/* ====== Render sliders ====== */
-const sliders = document.getElementById('sliders');
-for(const q of QUESTIONS){
-  sliders.innerHTML += `
-    <label class="small" style="margin-top:8px">${q.label}</label>
-    <input type="range" id="${q.key}" name="${q.key}" min="1" max="5" value="3">
+const container = document.getElementById('questions');
+pertanyaan.forEach((item, i) => {
+  const html = `
+    <div class="question">
+      <strong>${i+1}. ${item.q}</strong>
+      <div class="scale" id="scale${i}">
+        ${[1,2,3,4,5].map(n => `<button onclick="pilih(${i},${n},this)" aria-label="nilai ${n}">${n}</button>`).join('')}
+      </div>
+      <div class="small" style="margin-top:6px;color:#64748b">Kelompok: ${item.group}</div>
+    </div>
   `;
+  container.insertAdjacentHTML('beforeend', html);
+});
+
+let jawaban = Array(pertanyaan.length).fill(0);
+function pilih(index, nilai, el){
+  jawaban[index]=nilai;
+  const buttons = el.parentNode.querySelectorAll('button');
+  buttons.forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
 }
 
-/* ====== App state & util ====== */
-function readInputs(){
-  const out = {};
-  for(const q of QUESTIONS) out[q.key] = Number(document.getElementById(q.key).value);
-  return out;
-}
-function avg(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
-
-/* ====== Scoring & categories ====== */
-function computeCategories(vals){
-  const categories = {
-    Ibadah: avg([vals.ibadah, vals.quran, vals.zikir, vals.waktu]),
-    Hati: avg([vals.hati, vals.emosi, vals.khushu, vals.niat]),
-    Sosial: avg([vals.sosial, vals.sedekah]),
-    KendaliDiri: avg([vals.dosa, vals.semangat])
-  };
-  return categories;
-}
-function computeTotalScore(categories){
-  // each category 1-5; normalize to 0-100
-  const sum = Object.values(categories).reduce((a,b)=>a+b,0);
-  const avgCat = sum / Object.keys(categories).length; // 1-5
-  return Math.round(((avgCat - 1) / 4) * 100); // map 1..5 -> 0..100
-}
-
-/* ====== Verse mapping ====== */
-const VERSES = {
-  Ibadah: {text:'“Sungguh beruntung orang-orang yang beriman, yaitu mereka yang khusyuk dalam shalatnya.”', src:'QS Al-Mu\'minun:1–2'},
-  Hati: {text:'“Sesungguhnya dengan mengingat Allah hati menjadi tenang.”', src:'QS Ar-Ra\'d:28'},
-  Sosial: {text:'“Infakkanlah sebagian dari rezeki yang telah Kami berikan kepadamu.”', src:'QS Al-Baqarah:267'},
-  KendaliDiri: {text:'“(Ialah) orang-orang yang menahan amarah dan memaafkan.”', src:'QS Ali Imran:134'}
-};
-
-/* ====== Chart var ====== */
-let radarChart = null;
-
-/* ====== DOM refs ====== */
-const calcBtn = document.getElementById('calcBtn');
-const resultCard = document.getElementById('resultCard');
-const scoreLarge = document.getElementById('scoreLarge');
-const scoreTag = document.getElementById('scoreTag');
-const verseBox = document.getElementById('verseBox');
-const reminderBox = document.getElementById('reminderBox');
-const dailyBtn = document.getElementById('dailyBtn');
-const dailyCards = document.getElementById('dailyCards');
-const saveBtn = document.getElementById('saveBtn');
-const historyList = document.getElementById('historyList');
-const streakPill = document.getElementById('streakPill');
-
-/* ====== Local storage helpers ====== */
-function loadHistory(){ return JSON.parse(localStorage.getItem('taq_history')||'[]'); }
-function saveHistory(arr){ localStorage.setItem('taq_history', JSON.stringify(arr)); }
-
-function showHistory(){
-  const arr = loadHistory();
-  if(!arr.length){ historyList.innerText='Belum ada riwayat.'; return; }
-  historyList.innerHTML = arr.slice(0,8).map(e=>`<div style="margin-bottom:8px"><b>${e.date}</b> — ${e.score}/100 • ${e.tag}</div>`).join('');
-}
-
-/* ====== Streak logic ======
-  - We track last date user completed an assessment in localStorage 'taq_last'
-  - If user completes on consecutive days, streak++
-  - If user misses a day, streak reset to 1 for the new day
-*/
+// ----- streak (localStorage) -----
 function loadStreak(){
-  const s = JSON.parse(localStorage.getItem('taq_streak')||'{"count":0,"last":null}');
-  return s;
-}
-function saveStreak(obj){ localStorage.setItem('taq_streak', JSON.stringify(obj)); }
-function updateStreakOnComplete(){
-  const s = loadStreak();
+  const s = JSON.parse(localStorage.getItem('taqwa_streak')||'{}');
   const today = new Date().toISOString().slice(0,10);
-  if(s.last === today){
-    // already did today
-    return s;
+  document.getElementById('streakCount').innerText = s.count || 0;
+}
+loadStreak();
+
+// ----- hitung skor, radar aggregasi -----
+function hitungSkor(){
+  const answered = jawaban.filter(v=>v>0).length;
+  if(answered < pertanyaan.length){
+    alert('Masih ada yang belum diisi 😊');
+    return false;
   }
-  // check if last was yesterday
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
-  if(s.last === yesterday) s.count = (s.count||0) + 1;
-  else s.count = 1;
-  s.last = today;
-  saveStreak(s);
-  return s;
-}
-function renderStreak(){
-  const s = loadStreak();
-  streakPill.innerText = (s.count||0) + ' 🔥';
+  const total = jawaban.reduce((a,b)=>a+b,0);
+  const skor = Math.round((total / (pertanyaan.length*5)) * 100);
+  document.getElementById('hasil').innerText = skor;
+
+  let msg='';
+  if(skor < 40) msg = 'Perlu banyak meningkatkan rutinitas ibadah dan kesadaran spiritual.';
+  else if(skor < 70) msg = 'Sudah baik, tinggal jaga konsistensi dan tambah kualitas.';
+  else msg = 'Alhamdulillah! Level taqwa kamu sangat baik.';
+  document.getElementById('note').innerText = msg;
+
+  // save history
+  saveResult({date:new Date().toISOString(),score:skor,answers:jawaban});
+
+  // update radar
+  updateRadar();
+
+  // update recommendations and streak
+  updateRecommendations(skor);
+  updateStreakOnResult(skor);
+  renderHistory();
+  return true;
 }
 
-/* ====== Recommendation generator (rule-based) ====== */
-function generateDailyRecommendations(categories, score){
-  const recs = [];
-  // generic micro-actions
-  if(categories.Ibadah < 3){
-    recs.push('Mulai target: shalat berjamaah 3x/minggu. Pasang alarm adzan sebagai reminder.');
-  } else recs.push('Pertahankan kualitas shalat — tambahkan 5 menit tilawah harian.');
-  if(categories.Hati < 3) recs.push('Lakukan muhasabah malam 5 menit: catat 1 kebaikan & 1 perbaikan.');
-  if(categories.Sosial < 3) recs.push('Sisihkan sebagian kecil rejeki hari ini — Rp2.000/hari cukup memulai.');
-  if(categories.KendaliDiri < 3) recs.push('Latih menahan emosi: hitung sampai 10 & tarik napas.');
-  if(score >= 80) recs.push('Bagikan rasa syukur: tulis 3 hal yang disyukuri hari ini.');
-  // deduplicate & return
-  return [...new Set(recs)];
-}
-
-/* ====== API call for AI recommendations (optional) ======
-  - tries to POST to /api/recommendation with JSON {answers, categories, score, date}
-  - expects JSON {text: "..."} as response
-  - If API unavailable, fallback to rule-based recommendations above
-*/
-async function callApiForRecommendations(payload){
-  try{
-    const res = await fetch('/api/recommendation', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    if(!res.ok) throw new Error('api error');
-    const j = await res.json();
-    if(j && j.text) return j.text;
-    throw new Error('invalid response');
-  }catch(err){
-    return null;
-  }
-}
-
-/* ====== Main calculate flow ====== */
-calcBtn.addEventListener('click', async ()=>{
-  const vals = readInputs();
-  const categories = computeCategories(vals);
-  const score = computeTotalScore(categories);
-  // show result
-  resultCard.style.display = 'block';
-  scoreLarge.innerText = score;
-  scoreTag.innerText = score>=80?'🌟 Sangat baik':score>=60?'✨ Stabil':'⚠️ Perlu perbaikan';
-  // radar chart
-  const ctx = document.getElementById('radar').getContext('2d');
-  if(radarChart) radarChart.destroy();
-  radarChart = new Chart(ctx, {
-    type:'radar',
-    data:{
-      labels:Object.keys(categories),
-      datasets:[{
-        label:'Profil Spiritual (1-5)',
-        data:Object.values(categories).map(v=>Number(v.toFixed(2))),
-        fill:true,
-        backgroundColor:'rgba(37,99,235,0.12)',
-        borderColor:'#2563eb'
-      }]
-    },
-    options:{scales:{r:{min:0,max:5,ticks:{stepSize:1}}}}
+// grouping for radar
+const groups = ['Ritual','Quran','Charity','Social','SelfControl','Attitude','Ethics','Learning'];
+function computeGroupAverages(){
+  const map = {};
+  groups.forEach(g=>map[g]=[]);
+  pertanyaan.forEach((p,i)=>{map[p.group].push(jawaban[i]||0)});
+  const labels = groups;
+  const values = groups.map(g=>{
+    const arr = map[g];
+    if(!arr || arr.length===0) return 0;
+    const avg = arr.reduce((a,b)=>a+b,0)/ (arr.length*5) * 100; // percent
+    return Math.round(avg);
   });
+  return {labels,values};
+}
 
-  // verse: pick lowest category
-  const lowest = Object.entries(categories).sort((a,b)=>a[1]-b[1])[0][0];
-  const verse = VERSES[lowest] || VERSES.Ibadah;
-  verseBox.style.display='block';
-  verseBox.innerHTML = `<b>Ayat/Imbauan untuk ${lowest}:</b><br>“${verse.text}” <i>(${verse.src})</i>`;
+// ----- Chart.js radar -----
+let radarChart=null;
+function initRadar(){
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  radarChart = new Chart(ctx,{
+    type:'radar',
+    data:{labels:groups, datasets:[{label:'Profil',data: Array(groups.length).fill(10), fill:true, tension:0.3, pointRadius:4}]},
+    options:{scales:{r:{beginAtZero:true,max:100}},plugins:{legend:{display:false}}}
+  });
+}
+initRadar();
+function updateRadar(){
+  const d = computeGroupAverages();
+  radarChart.data.datasets[0].data = d.values;
+  radarChart.update();
+}
 
-  // reminder/sedekah
-  reminderBox.style.display='block';
-  if(categories.Sosial < 3) reminderBox.innerHTML = `🤲 Ingat sedekah: sisihkan sedikit rejeki hari ini. Sedekah membuka pintu berkah.`;
-  else if(score < 60) reminderBox.innerHTML = `✨ Sedekah sederhana bisa menenangkan hati — coba sisihkan minggu ini.`;
-  else reminderBox.innerHTML = `🌿 Bagus! Pertahankan kebiasaan baikmu dan berbagi.`
-
-  // update streak
-  const newStreak = updateStreakOnComplete();
-  renderStreak();
-
-  // enable save
-  saveBtn.onclick = ()=>{
-    const hist = loadHistory();
-    hist.unshift({date:new Date().toLocaleString(),score,tag:score>=80?'Sangat baik':score>=60?'Stabil':'Perbaikan',categories});
-    saveHistory(hist);
-    showHistory();
-    alert('Tersimpan ke riwayat!');
-  };
-
-  // daily recommendations: try API else rule-based
-  dailyCards.innerHTML = '<div class="small muted">Mencari rekomendasi...</div>';
-  const payload = {answers:vals,categories,score,date:new Date().toISOString()};
-  const aiText = await callApiForRecommendations(payload);
-  if(aiText){
-    dailyCards.innerHTML = `<div style="background:#fff;padding:12px;border-radius:8px">${aiText}</div>`;
+// ----- recommendations -----
+function updateRecommendations(score){
+  const box = document.getElementById('recoList'); box.innerHTML='';
+  const recos = [];
+  if(score<40){
+    recos.push('Mulai rutinitas shalat berjamaah/di rumah pada waktu tepat.');
+    recos.push('Targetkan 10 menit tadabbur Al-Qur\'an setiap hari.');
+    recos.push('Mulai catat pengeluaran: sisihkan untuk sedekah minimal 1% terlebih dahulu.');
+  } else if(score<70){
+    recos.push('Pertahankan kualitas shalat: praktikkan tawadhu dan khusyuk.');
+    recos.push('Gabung 1 kajian atau kelas online per bulan.');
+    recos.push('Buat jadwal infaq kecil mingguan (mis. Rp 5.000-10.000).');
   } else {
-    const recs = generateDailyRecommendations(categories,score);
-    dailyCards.innerHTML = `<ul style="margin:0;padding-left:18px">${recs.map(r=>`<li>${r}</li>`).join('')}</ul>`;
+    recos.push('Bagus! Tantang diri untuk jadi mentor/kader di komunitas.');
+    recos.push('Tingkatkan zakat / wakaf produktif jika mampu.');
+    recos.push('Catat kisah perubahanmu: bagikan sebagai inspirasi (Jaga Cerita).');
   }
+  recos.forEach(r=>{const li=document.createElement('li');li.innerText=r;box.appendChild(li)});
+}
+
+// ----- history save/load -----
+function saveResult(obj){
+  const key='taqwa_history';
+  const arr = JSON.parse(localStorage.getItem(key)||'[]');
+  arr.unshift(obj); // latest first
+  if(arr.length>50) arr.pop();
+  localStorage.setItem(key, JSON.stringify(arr));
+}
+function renderHistory(){
+  const arr = JSON.parse(localStorage.getItem('taqwa_history')||'[]');
+  const box = document.getElementById('historyBox');
+  if(arr.length===0){box.innerText='Belum ada penyimpanan.';return}
+  box.innerHTML = arr.slice(0,6).map(it=>`${(new Date(it.date)).toLocaleString()} — Skor: ${it.score}`).join('<br>');
+}
+renderHistory();
+
+// ----- streak logic: jika skor >= 60 dianggap hari "complete" -----
+function updateStreakOnResult(score){
+  const key = 'taqwa_streak';
+  const today = new Date().toISOString().slice(0,10);
+  const s = JSON.parse(localStorage.getItem(key)||'{}');
+  if(!s.lastDate) s.lastDate='';
+  let count = s.count||0;
+  const last = s.lastDate;
+  if(score >= 60){
+    if(last === today){
+      // already counted today
+    } else {
+      // if yesterday was last, increment; else reset
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+      if(last === yesterday) count = count + 1;
+      else count = 1;
+      localStorage.setItem(key, JSON.stringify({count:count, lastDate:today}));
+    }
+  } else {
+    // if score low, don't change streak, but could optionally reset
+    // keep as-is
+  }
+  loadStreak();
+}
+
+// ----- helper: reset form -----
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Reset semua jawaban?')) return;
+  jawaban = Array(pertanyaan.length).fill(0);
+  document.querySelectorAll('.scale button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('hasil').innerText='-';
+  document.getElementById('note').innerText='';
 });
 
-/* daily recommendation button uses same logic but only shows recs */
-dailyBtn.addEventListener('click', async ()=>{
-  const vals = readInputs(); const categories = computeCategories(vals); const score = computeTotalScore(categories);
-  dailyCards.innerHTML = '<div class="small muted">Mencari rekomendasi...</div>';
-  const payload = {answers:vals,categories,score,date:new Date().toISOString()};
-  const aiText = await callApiForRecommendations(payload);
-  if(aiText) dailyCards.innerHTML = `<div style="background:#fff;padding:12px;border-radius:8px">${aiText}</div>`;
-  else {
-    const recs = generateDailyRecommendations(categories,score);
-    dailyCards.innerHTML = `<ul style="margin:0;padding-left:18px">${recs.map(r=>`<li>${r}</li>`).join('')}</ul>`;
-  }
+// ----- save verse -----
+document.getElementById('saveVerse').addEventListener('click', ()=>{
+  const v = document.getElementById('verse').innerText.trim();
+  localStorage.setItem('taqwa_verse', v);
+  alert('Ayat / reminder tersimpan.');
 });
+(function loadVerse(){
+  const v = localStorage.getItem('taqwa_verse');
+  if(v) document.getElementById('verse').innerText = v;
+})();
 
-/* initial render */
-showHistory(); renderStreak();
+// ----- button actions -----
+document.getElementById('hitungBtn').addEventListener('click', ()=>{ if(hitungSkor()){ /* nothing */ } });
+
+// init history and streak load
+renderHistory(); loadStreak();
+
 </script>
 </body>
 </html>
