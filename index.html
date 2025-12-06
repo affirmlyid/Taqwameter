@@ -3,36 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taqwameter Final Live</title>
+<title>Taqwameter HP Friendly Final</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.css">
 <style>
-body { font-family: Arial, sans-serif; background-color: #f0f4f8; color: #0a2540; margin:0; padding:0; }
-header { background-color:#0b1f3f; color:#fff; padding:1rem; text-align:center; }
-header input { padding:0.5rem; margin-top:0.5rem; border-radius:5px; border:none; width:200px; }
-header button { padding:0.5rem 1rem; margin-left:5px; border:none; border-radius:5px; cursor:pointer; background-color:#fff;color:#0b1f3f; }
+body{font-family:Arial,sans-serif; background:#f0f4f8; margin:0; padding:0; color:#0b1f3f;}
+header{background:#0b1f3f; color:#fff; padding:1rem; text-align:center; position:sticky; top:0; z-index:10;}
+header input{padding:0.5rem; margin-top:0.5rem; border-radius:5px; border:none; width:60%; max-width:200px;}
+header button{padding:0.5rem 1rem; margin-left:5px; border:none; border-radius:5px; cursor:pointer; background:#fff;color:#0b1f3f;}
 .section{padding:1rem;}
-.motivBanner{background:linear-gradient(90deg,#0b1f3f,#2196F3); color:#fff; padding:1rem; border-radius:10px; text-align:center; margin-bottom:1rem; font-weight:bold;}
-.calendar{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; padding:1rem;}
-.day{padding:1rem; border-radius:5px; cursor:pointer; text-align:center; font-weight:bold; transition:0.2s;}
-.day.green{background-color:#a0d4f1;color:#0b1f3f;} /* sudah diisi */
-.day.red{background-color:#f8c8d8;color:#0b1f3f;} /* belum diisi */
+.motivBanner{background:#2196F3; color:#fff; padding:1rem; border-radius:10px; text-align:center; font-weight:bold; margin-bottom:1rem;}
+.calendar{display:flex; overflow-x:auto; padding:0.5rem; gap:5px;}
+.day{flex:0 0 40px; padding:0.8rem; border-radius:5px; cursor:pointer; text-align:center; font-weight:bold; transition:0.2s;}
+.day.blue{background-color:#a0d4f1;color:#0b1f3f;}
+.day.red{background-color:#f8c8d8;color:#0b1f3f;}
 .day.today{border:2px solid #2196F3;}
-.day:hover{transform:scale(1.05); box-shadow:0 0 10px rgba(0,0,0,0.3);}
+.day:hover{transform:scale(1.1);}
 .modal{display:none; position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;}
-.modal-content{background:#fff;padding:2rem;border-radius:10px;width:90%; max-width:600px; max-height:90%; overflow-y:auto;}
-button{padding:0.5rem 1rem; margin-top:1rem; cursor:pointer; background-color:#0b1f3f; color:#fff; border:none; border-radius:5px;}
-table{width:100%; border-collapse: collapse; margin-top:1rem;}
-th, td{border:1px solid #0b1f3f; padding:5px; text-align:center; font-size:0.9rem;}
+.modal-content{background:#fff;padding:1rem;border-radius:10px;width:95%; max-width:400px; max-height:90%; overflow-y:auto;}
+button{padding:0.5rem 1rem; margin-top:1rem; cursor:pointer; background-color:#0b1f3f; color:#fff; border:none; border-radius:5px; font-size:0.9rem;}
+table{width:100%; border-collapse: collapse; margin-top:1rem; font-size:0.85rem;}
+th, td{border:1px solid #0b1f3f; padding:5px; text-align:center;}
 th{background-color:#a0d4f1;}
-.tooltip{
-  position:absolute; background:#333; color:#fff; padding:5px 10px; border-radius:5px; font-size:0.8rem; pointer-events:none; opacity:0; transition:0.2s;
-}
+.chart-container{max-height:350px; overflow-y:auto; padding:10px; background:#fff; border-radius:10px;}
+.collapsible{cursor:pointer; padding:10px; background:#2196F3; color:#fff; border:none; border-radius:5px; width:100%; text-align:left; font-size:0.9rem;}
+.contentCollapsible{display:none; overflow:hidden; padding:0 10px;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Taqwameter Final Live</h1>
+  <h1>Taqwameter HP Friendly Final</h1>
   <p id="greeting"></p>
   <input type="text" id="username" placeholder="Masukkan nama kamu" />
   <button id="saveNameBtn">Simpan Nama</button>
@@ -59,9 +59,13 @@ th{background-color:#a0d4f1;}
   </div>
 </div>
 
-<section class="section">
-  <h2>Radar Chart & Rekap</h2>
-  <canvas id="radarChart"></canvas>
+<section class="section chart-container">
+  <h2>Radar Chart</h2>
+  <canvas id="radarChart" height="300"></canvas>
+  <button class="collapsible">Lihat Rekap Harian</button>
+  <div class="contentCollapsible" id="dailyContent"></div>
+  <button class="collapsible">Lihat Rekap Mingguan</button>
+  <div class="contentCollapsible" id="weeklyContent"></div>
 </section>
 
 <section class="section">
@@ -70,7 +74,7 @@ th{background-color:#a0d4f1;}
 
 <section class="section">
   <h2>Share Progress</h2>
-  <button onclick="window.open('https://wa.me/?text=Assalamu%27alaikum%2C+cek+progress+Taqwameter+aku','_blank')">Share WA</button>
+  <button onclick="window.open('https://wa.me/?text=Assalamu%27alaikum,+cek+progress+Taqwameter+aku','_blank')">Share WA</button>
   <button onclick="window.location.href='mailto:?subject=Taqwameter Progress&body=Assalamu%27alaikum,%0ACek progress Taqwameter saya!'">Share Email</button>
   <button onclick="window.open('https://instagram.com','_blank')">Share IG</button>
   <button onclick="window.open('https://tiktok.com','_blank')">Share TikTok</button>
@@ -92,7 +96,10 @@ const saveNameBtn=document.getElementById('saveNameBtn');
 const greeting=document.getElementById('greeting');
 function loadUsername(){
   const name=localStorage.getItem('taqwUser');
-  if(name){usernameInput.value=name; greeting.innerText=`Assalamu'alaikum, ${name}! Semoga ibadahmu hari ini lancar.`;}
+  if(name){ 
+    usernameInput.value=name; 
+    greeting.innerText=`Assalamu'alaikum, ${name}! 🌟 Semoga ibadahmu hari ini lancar dan penuh berkah! Tetap semangat menjalankan amalan harianmu!`; 
+  }
 }
 saveNameBtn.addEventListener('click',()=>{
   const name=usernameInput.value.trim();
@@ -101,28 +108,28 @@ saveNameBtn.addEventListener('click',()=>{
 });
 loadUsername();
 
-// ===== Ayat Harian =====
-const ayatData=[
-{text:"Dan dirikanlah shalat...",source:"QS. Al-Baqarah:43"},
-{text:"Sesungguhnya shalat itu...",source:"QS. Al-Ma'idah:6"},
-{text:"Allah tidak membebani seseorang...",source:"QS. Al-Baqarah:286"}];
+// ===== Ayat Harian & Motivasi =====
+const ayatData=[{text:"Dan dirikanlah shalat...",source:"QS. Al-Baqarah:43"},{text:"Sesungguhnya shalat itu...",source:"QS. Al-Ma'idah:6"},{text:"Allah tidak membebani seseorang...",source:"QS. Al-Baqarah:286"}];
 const dailyAyah=document.getElementById('dailyAyah');
-function showDailyAyah(){ const day=new Date().getDate(); const ayah=ayatData[day%ayatData.length]; dailyAyah.innerText=`${ayah.text} (${ayah.source})`; }
-showDailyAyah();
-
-// ===== Motivasi Banner =====
 const motivBanner=document.getElementById('motivBanner');
-const banners=["✨ Tetap semangat shalat hari ini!","📖 Bacalah Al-Qur’an untuk hati yang tenang.","💰 Sedekah sedikit tiap hari, pahala besar!"];
-function showMotivBanner(){ const day=new Date().getDate(); motivBanner.innerText=banners[day%banners.length]; }
-showMotivBanner();
+const banners=[
+  "✨ Tetap semangat shalat hari ini!",
+  "📖 Bacalah Al-Qur’an untuk hati yang tenang.",
+  "💰 Sedekah sedikit tiap hari, pahala besar!",
+  "🌸 Jangan lupa dzikir pagi, hati tenang sepanjang hari!",
+  "🙏 Tetap sabar & syukur, nikmati setiap momen ibadah!"
+];
+function showDailyAyahAndMotiv(){
+  const day=new Date().getDate();
+  const ayah=ayatData[day % ayatData.length];
+  dailyAyah.innerText=`${ayah.text} (${ayah.source})`;
+  motivBanner.innerText=banners[day % banners.length];
+}
+showDailyAyahAndMotiv();
 
 // ===== Kalender =====
 const calendar=document.getElementById('calendar');
 const questions=['Ibadah wajib','Al-Qur’an','Sholat sunnah','Sikap','Self-control','Confident','Produktivitas','Sedekah','Kondisi mental','Kebaikan sosial'];
-const questionIcons={'Ibadah wajib':'🕌','Al-Qur’an':'📖','Sholat sunnah':'🙏','Sikap':'🙂','Self-control':'🧘‍♂️','Confident':'💪','Produktivitas':'📈','Sedekah':'💰','Kondisi mental':'🧠','Kebaikan sosial':'🤝'};
-
-// Tooltip untuk kalender
-const tooltip=document.createElement('div'); tooltip.className='tooltip'; document.body.appendChild(tooltip);
 
 function renderCalendar(){
   const daysInMonth=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
@@ -133,20 +140,9 @@ function renderCalendar(){
     dayDiv.className='day';
     const key=`day-${d}`;
     const filled=localStorage.getItem(key);
-    dayDiv.classList.add(filled?'green':'red');
+    dayDiv.classList.add(filled?'blue':'red');
     if(d===todayDate) dayDiv.classList.add('today');
     dayDiv.innerText=d;
-
-    dayDiv.addEventListener('mouseenter',(e)=>{
-      tooltip.style.opacity=1;
-      tooltip.innerText=filled ? "✅ Skor hari ini tersimpan" : "❌ Belum mengisi skor";
-    });
-    dayDiv.addEventListener('mousemove',(e)=>{
-      tooltip.style.top=e.pageY+10+'px';
-      tooltip.style.left=e.pageX+10+'px';
-    });
-    dayDiv.addEventListener('mouseleave',()=>{tooltip.style.opacity=0;});
-
     dayDiv.addEventListener('click',()=>openModal(d));
     calendar.appendChild(dayDiv);
   }
@@ -158,17 +154,13 @@ const modal=document.getElementById('modal');
 const modalDate=document.getElementById('modalDate');
 const questionsContainer=document.getElementById('questionsContainer');
 const dailyForm=document.getElementById('dailyForm');
+
 function openModal(day){
   if(!localStorage.getItem('taqwUser')) return alert('Isi nama dulu!');
   modal.style.display='flex';
   modalDate.innerText=`Tanggal ${day}`;
   questionsContainer.innerHTML='';
-  questions.forEach(q=>{
-    questionsContainer.innerHTML+=`
-      <label>${questionIcons[q]} ${q} (1-5)</label>
-      <input type="number" min="1" max="5" name="${q}" required /><br>
-    `;
-  });
+  questions.forEach(q=>{questionsContainer.innerHTML+=`<label>${q} (1-5)</label><input type="number" min="1" max="5" name="${q}" required /><br>`;});
   dailyForm.onsubmit=function(e){
     e.preventDefault();
     const data={};
@@ -176,103 +168,112 @@ function openModal(day){
     localStorage.setItem(`day-${day}`,JSON.stringify(data));
     modal.style.display='none';
     renderCalendar();
-    updateRadarAndAnalysis(day);
+    updateRadar();
+    renderRekap();
+    showPopup(day);
   }
 }
 
 // ===== Radar Chart =====
 const ctx=document.getElementById('radarChart').getContext('2d');
-let radarChart=new Chart(ctx,{ type:'radar', data:{ labels:questions, datasets:[{label:'Skor Harian', data:Array(questions.length).fill(0), backgroundColor:'rgba(11,31,63,0.2)', borderColor:'rgba(11,31,63,1)', borderWidth:2, pointBackgroundColor:questions.map(q=>'rgba(0,128,255,0.7)'), pointRadius:8 }]}, options:{responsive:true, maintainAspectRatio:false, animation:{duration:1000}, scales:{r:{beginAtZero:true,min:0,max:5}}, plugins:{tooltip:{enabled:true}}} });
+let radarChart=new Chart(ctx,{ type:'radar', data:{ labels:questions, datasets:[{label:'Skor', data:Array(questions.length).fill(0), backgroundColor:'rgba(11,31,63,0.2)', borderColor:'rgba(11,31,63,1)', borderWidth:1, pointBackgroundColor:'#0b1f3f', pointRadius:4 }]}, options:{responsive:true, maintainAspectRatio:false, scales:{r:{beginAtZero:true,min:0,max:5}}} });
 
-// ===== Analisis & Rekomendasi =====
-function analyzeScore(day){
+// ===== Popup =====
+function showPopup(day){
   const data=JSON.parse(localStorage.getItem(`day-${day}`))||{};
-  let analysis=[];
+  let msg='';
   questions.forEach(q=>{
     const score=data[q]||0;
-    let msg='Baik'; let rec='';
-    if(score<=2){msg='Perlu ditingkatkan'; switch(q){
-      case 'Ibadah wajib': rec='Tingkatkan fokus shalat tepat waktu & khusyuk'; break;
-      case 'Al-Qur’an': rec='Baca minimal 1 halaman Al-Qur’an & tadabbur'; break;
-      case 'Sholat sunnah': rec='Tambahkan sholat sunnah rawatib'; break;
+    let rec='';
+    if(score<=2){switch(q){
+      case 'Ibadah wajib': rec='Tingkatkan fokus shalat & khusyuk'; break;
+      case 'Al-Qur’an': rec='Baca minimal 1 halaman & tadabbur'; break;
+      case 'Sholat sunnah': rec='Tambahkan rawatib'; break;
       case 'Sikap': rec='Latih sabar & toleransi'; break;
-      case 'Self-control': rec='Hindari hal-hal pemicu emosi negatif'; break;
-      case 'Confident': rec='Tingkatkan percaya diri melalui dzikir & doa'; break;
-      case 'Produktivitas': rec='Buat daftar prioritas ibadah & kerjaan'; break;
-      case 'Sedekah': rec='Sisihkan sedikit rezeki setiap hari untuk sedekah'; break;
-      case 'Kondisi mental': rec='Dzikir untuk menenangkan hati'; break;
-      case 'Kebaikan sosial': rec='Lakukan 1 kebaikan sosial tiap hari'; break;}
-    } else if(score==3){msg='Cukup'; rec='Pertahankan & tingkatkan sedikit demi sedikit';}
-    else {msg='Baik'; rec='Pertahankan konsistensi ibadah & amalan';}
-    analysis.push({indikator:q,score:score,analisis:msg,rekomendasi:rec,dasar:'Islamic Development Research (2022)'});
-  });
-  return analysis;
-}
-
-// ===== Rekap =====
-function getWeeklyMonthlySummary(){
-  const today=new Date(); const currentDay=today.getDate();
-  let weekly=[],monthly=[];
-  for(let d=1;d<=currentDay;d++){
-    const data=JSON.parse(localStorage.getItem(`day-${d}`))||{};
-    weekly.push(data); monthly.push(data);
-  }
-  return {weekly,monthly};
-}
-
-// ===== Update Radar & Analisis =====
-function updateRadarAndAnalysis(day){
-  const data=JSON.parse(localStorage.getItem(`day-${day}`))||{};
-  radarChart.data.datasets[0].data=questions.map(q=>data[q]||0);
-  radarChart.update();
-  const analysis=analyzeScore(day);
-  let msg='Skor Hari Ini:\n';
-  analysis.forEach(a=>{
-    msg+=`• ${a.indikator}: ${a.score} → ${a.analisis}\n  Rekomendasi: ${a.rekomendasi}\n  Dasar: ${a.dasar}\n`;
+      case 'Self-control': rec='Hindari emosi negatif'; break;
+      case 'Confident': rec='Tingkatkan percaya diri'; break;
+      case 'Produktivitas': rec='Buat prioritas ibadah & kerjaan'; break;
+      case 'Sedekah': rec='Sisihkan rezeki untuk sedekah'; break;
+      case 'Kondisi mental': rec='Dzikir menenangkan hati'; break;
+      case 'Kebaikan sosial': rec='Lakukan 1 kebaikan sosial'; break;
+    }} else if(score==3){rec='Pertahankan & tingkatkan sedikit';}
+    else{rec='Pertahankan konsistensi';}
+    msg+=`${q}: ${score}\nRekomendasi: ${rec}\nMotivasi: ${banners[day%banners.length]}\n\n`;
   });
   alert(msg);
 }
 
+// ===== Update Radar =====
+function updateRadar(){
+  const today=new Date().getDate();
+  const data=JSON.parse(localStorage.getItem(`day-${today}`))||{};
+  radarChart.data.datasets[0].data=questions.map(q=>data[q]||0);
+  radarChart.update();
+}
+updateRadar();
+
+// ===== Rekap Harian & Mingguan =====
+const dailyContent=document.getElementById('dailyContent');
+const weeklyContent=document.getElementById('weeklyContent');
+
+function renderRekap(){
+  const today=new Date().getDate();
+  dailyContent.innerHTML=''; weeklyContent.innerHTML='';
+  // Harian
+  questions.forEach(q=>{
+    let scores=[];
+    for(let d=1; d<=today; d++){
+      const data=JSON.parse(localStorage.getItem(`day-${d}`))||{};
+      scores.push(data[q]||0);
+    }
+    const lastScore=scores[scores.length-1];
+    dailyContent.innerHTML+=`<p>${q}: ${lastScore}</p>`;
+    const avg=(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(2);
+    weeklyContent.innerHTML+=`<p>${q}: ${scores.join(', ')} (Rata-rata: ${avg})</p>`;
+  });
+}
+renderRekap();
+
+// ===== Collapsible =====
+const collapsibles=document.getElementsByClassName("collapsible");
+for(let i=0;i<collapsibles.length;i++){
+  collapsibles[i].addEventListener("click",function(){
+    const content=this.nextElementSibling;
+    content.style.display=(content.style.display==="block")?"none":"block";
+  });
+}
+
 // ===== PDF =====
-document.getElementById('generatePDF').addEventListener('click',async()=>{
+document.getElementById('generatePDF').addEventListener('click',()=>{
   const { jsPDF }=window.jspdf;
   const doc=new jsPDF();
   const name=localStorage.getItem('taqwUser')||'User';
   const today=new Date().getDate();
-  const analysis=analyzeScore(today);
-  const summary=getWeeklyMonthlySummary();
-  let y=10;
-  doc.setFontSize(14); doc.text(`Assalamu'alaikum ${name}`,10,y); y+=10;
-  doc.setFontSize(12); doc.text(`Ayat motivasi hari ini: ${banners[today%banners.length]}`,10,y); y+=10;
-  doc.text(`Skor Harian:`,10,y); y+=10;
-
-  // Tabel Harian
-  doc.autoTable({ startY:y, head:[['Indikator','Skor','Analisis','Rekomendasi','Dasar']], body:analysis.map(a=>[a.indikator,a.score,a.analisis,a.rekomendasi,a.dasar]), styles:{fillColor: function(rowData){ const score=rowData.raw[1]; if(score<=2) return [248,215,218]; else if(score==3) return [255,243,205]; else return [212,237,218]; } } });
-  y=doc.lastAutoTable.finalY+10;
-
-  // Radar Chart
+  doc.setFontSize(14); doc.text(`Assalamu'alaikum ${name}`,10,10);
+  doc.setFontSize(12); doc.text(`Motivasi hari ini: ${banners[today%banners.length]}`,10,20);
+  doc.text('Skor Harian & Rekomendasi Amalan:',10,30);
+  const tableBody=questions.map(q=>{
+    const data=JSON.parse(localStorage.getItem(`day-${today}`))||{};
+    const score=data[q]||0;
+    let rec='';
+    if(score<=2){switch(q){
+      case 'Ibadah wajib': rec='Tingkatkan fokus shalat & khusyuk'; break;
+      case 'Al-Qur’an': rec='Baca minimal 1 halaman & tadabbur'; break;
+      case 'Sholat sunnah': rec='Tambahkan rawatib'; break;
+      case 'Sikap': rec='Latih sabar & toleransi'; break;
+      case 'Self-control': rec='Hindari emosi negatif'; break;
+      case 'Confident': rec='Tingkatkan percaya diri'; break;
+      case 'Produktivitas': rec='Buat prioritas ibadah & kerjaan'; break;
+      case 'Sedekah': rec='Sisihkan rezeki untuk sedekah'; break;
+      case 'Kondisi mental': rec='Dzikir menenangkan hati'; break;
+      case 'Kebaikan sosial': rec='Lakukan 1 kebaikan sosial'; break;
+    }} else if(score==3){rec='Pertahankan & tingkatkan sedikit';} else{rec='Pertahankan konsistensi';}
+    return [q,score,rec,banners[today%banners.length]];
+  });
+  doc.autoTable({ startY:40, head:[['Indikator','Skor','Rekomendasi Amalan','Motivasi']], body:tableBody });
   const canvas=document.getElementById('radarChart');
   const imgData=canvas.toDataURL('image/png');
-  doc.addImage(imgData,'PNG',10,y,180,100); y+=110;
-
-  // Rekap Mingguan
-  doc.text('Rekap Mingguan:',10,y); y+=10;
-  questions.forEach(q=>{
-    const scores=summary.weekly.map(d=>d[q]||0);
-    doc.text(`${q}: ${scores.join(', ')} (Avg: ${(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(2)})`,10,y); y+=7;
-  });
-
-  // Rekap Bulanan
-  y+=5; doc.text('Rekap Bulanan:',10,y); y+=10;
-  questions.forEach(q=>{
-    const scores=summary.monthly.map(d=>d[q]||0);
-    doc.text(`${q}: ${scores.join(', ')} (Avg: ${(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(2)})`,10,y); y+=7;
-  });
-
-  // Footer
-  doc.setFontSize(10);
-  doc.text("Powered by Affirmly | Taqwameter",10,290);
-
+  doc.addImage(imgData,'PNG',10,160,180,100);
   doc.save('taqwamenter-raport.pdf');
 });
 </script>
