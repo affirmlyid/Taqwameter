@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taqwameter</title>
+<title>Taqwameter Final HP & Web Friendly</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -23,6 +23,7 @@ header button{padding:0.5rem 1rem;margin-left:5px;border:none;border-radius:5px;
 .modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;}
 .modal-content{background:#fff;padding:1rem;border-radius:10px;width:95%; max-width:400px; max-height:90%; overflow-y:auto;}
 button{padding:0.5rem 1rem; margin-top:1rem; cursor:pointer; background-color:#0b1f3f; color:#fff; border:none; border-radius:5px; font-size:0.9rem;}
+.report-container{overflow-x:auto;}
 table{width:100%; border-collapse: collapse; margin-top:1rem; font-size:0.85rem;}
 th, td{border:1px solid #0b1f3f; padding:5px; text-align:center;}
 th{background-color:#a0d4f1;}
@@ -35,7 +36,7 @@ footer{text-align:center; padding:10px; background:#f0f4f8; color:#0b1f3f; font-
 <body>
 
 <header>
-  <h1>Taqwameter</h1>
+  <h1>Taqwameter Final</h1>
   <p id="greeting"></p>
   <input type="text" id="username" placeholder="Masukkan nama kamu" />
   <button id="saveNameBtn">Simpan Nama</button>
@@ -64,17 +65,17 @@ footer{text-align:center; padding:10px; background:#f0f4f8; color:#0b1f3f; font-
   <canvas id="radarChart" height="300"></canvas>
 </section>
 
-<section class="section">
+<section class="section report-container">
   <h2>Raport Harian</h2>
   <div id="dailyReport"></div>
 </section>
 
-<section class="section">
+<section class="section report-container">
   <h2>Raport Mingguan</h2>
   <div id="weeklyReport"></div>
 </section>
 
-<section class="section">
+<section class="section report-container">
   <h2>Raport Bulanan</h2>
   <div id="monthlyReport"></div>
 </section>
@@ -108,7 +109,7 @@ function loadUsername(){
   const name=localStorage.getItem('taqwUser');
   if(name){ 
     usernameInput.value=name; 
-    greeting.innerText=`Assalamu'alaikum, ${name}! 🌟 Semoga ibadahmu hari ini lancar & penuh berkah! Tetap semangat!`; 
+    greeting.innerText=`Assalamu'alaikum, ${name}! Semoga ibadahmu hari ini lancar & penuh berkah! Tetap semangat!`; 
   }
 }
 saveNameBtn.addEventListener('click',()=>{
@@ -122,7 +123,7 @@ loadUsername();
 const ayatData=[{text:"Dan dirikanlah shalat...",source:"QS. Al-Baqarah:43"},{text:"Sesungguhnya shalat itu...",source:"QS. Al-Ma'idah:6"},{text:"Allah tidak membebani seseorang...",source:"QS. Al-Baqarah:286"}];
 const dailyAyah=document.getElementById('dailyAyah');
 const motivBanner=document.getElementById('motivBanner');
-const banners=["✨ Tetap semangat shalat!","📖 Bacalah Al-Qur’an untuk hati yang tenang.","💰 Sedekah sedikit tiap hari!","🌸 Dzikir pagi, hati tenang!","🙏 Tetap sabar & syukur!"];
+const banners=["Tetap semangat shalat!","Bacalah Al-Qur’an untuk hati yang tenang.","Sedekah sedikit tiap hari!","Dzikir pagi, hati tenang!","Tetap sabar & syukur!"];
 function showDailyAyahAndMotiv(){
   const day=new Date().getDate();
   const ayah=ayatData[day % ayatData.length];
@@ -131,18 +132,18 @@ function showDailyAyahAndMotiv(){
 }
 showDailyAyahAndMotiv();
 
-// ===== Pertanyaan + Emoticon & Rekomendasi =====
+// ===== Pertanyaan & Rekomendasi =====
 const questions=[
-  {label:'Ibadah wajib 🕌', key:'ibadah', rec:'Tingkatkan khusyuk shalat 🕌'},
-  {label:'Al-Qur’an 📖', key:'alquran', rec:'Baca minimal 1 halaman + tadabbur 📖'},
-  {label:'Sholat sunnah 🙏', key:'sholatSunnah', rec:'Tambahkan 2 rakaat dhuha 🙏'},
-  {label:'Sikap 😊', key:'sikap', rec:'Senyum & sabar 😊'},
-  {label:'Self-control 🧘', key:'selfControl', rec:'Latih menahan emosi 🧘'},
-  {label:'Confident 💪', key:'confident', rec:'Percaya diri & do’a 💪'},
-  {label:'Produktivitas ⚡', key:'produktivitas', rec:'Rencanakan tugas hari ⚡'},
-  {label:'Sedekah 💰', key:'sedekah', rec:'Sedekah meski kecil 💰'},
-  {label:'Kondisi mental 🧠', key:'mental', rec:'Dzikir pagi & rileks 🧠'},
-  {label:'Kebaikan sosial 🤝', key:'sosial', rec:'Tolong teman/keluarga 🤝'}
+  {label:'Ibadah wajib', key:'ibadah', rec:'Tingkatkan khusyuk shalat'},
+  {label:'Al-Qur’an', key:'alquran', rec:'Baca minimal 1 halaman + tadabbur'},
+  {label:'Sholat sunnah', key:'sholatSunnah', rec:'Tambahkan 2 rakaat dhuha'},
+  {label:'Sikap', key:'sikap', rec:'Senyum & sabar'},
+  {label:'Self-control', key:'selfControl', rec:'Latih menahan emosi'},
+  {label:'Confident', key:'confident', rec:'Percaya diri & do’a'},
+  {label:'Produktivitas', key:'produktivitas', rec:'Rencanakan tugas hari'},
+  {label:'Sedekah', key:'sedekah', rec:'Sedekah meski kecil'},
+  {label:'Kondisi mental', key:'mental', rec:'Dzikir pagi & rileks'},
+  {label:'Kebaikan sosial', key:'sosial', rec:'Tolong teman/keluarga'}
 ];
 
 // ===== Kalender Grid =====
@@ -187,7 +188,7 @@ function openModal(day){
     renderCalendarGrid();
     updateRadar();
     renderReports();
-    alert('Skor tersimpan! 🌟');
+    alert('Skor tersimpan!');
   }
 }
 
@@ -202,7 +203,7 @@ function updateRadar(){
 }
 updateRadar();
 
-// ===== Render Reports + Apresiasi =====
+// ===== Render Reports =====
 const dailyReport=document.getElementById('dailyReport');
 const weeklyReport=document.getElementById('weeklyReport');
 const monthlyReport=document.getElementById('monthlyReport');
@@ -212,54 +213,56 @@ function renderReports(){
   const daysInMonth=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
 
   // --- Harian ---
-  dailyReport.innerHTML='<table><tr><th>Indikator</th><th>Skor Hari Ini</th></tr>';
+  let html=`<table><tr><th>Indikator</th><th>Skor Hari Ini</th></tr>`;
   questions.forEach(q=>{
     const data=JSON.parse(localStorage.getItem(`day-${today.getDate()}`))||{};
     const score=data[q.key]||0;
-    dailyReport.innerHTML+=`<tr><td>${q.label}</td><td>${score}</td></tr>`;
+    html+=`<tr><td>${q.label}</td><td>${score}</td></tr>`;
   });
-  dailyReport.innerHTML+='</table>';
-
-  // --- Apresiasi harian ---
-  let apresiasiHTML='<div class="apresiasi"><b>Apresiasi & Motivasi Hari Ini:</b><br>';
+  html+='</table>';
+  html+='<div class="apresiasi"><b>Apresiasi & Motivasi Hari Ini:</b><br>';
   questions.forEach(q=>{
     const data=JSON.parse(localStorage.getItem(`day-${today.getDate()}`))||{};
     const score=data[q.key]||0;
-    if(score>=4) apresiasiHTML+=`${q.label}: Mantap! 🌟 Skormu ${score}, teruskan ibadah yang konsisten!<br>`;
-    else if(score==3) apresiasiHTML+=`${q.label}: Bagus 👍 Skormu ${score}, ayo tingkatkan sedikit lagi!<br>`;
-    else apresiasiHTML+=`${q.label}: Jangan menyerah 💪 Skormu ${score}, fokus sedikit lagi besok!<br>`;
+    if(score>=4) html+=`${q.label}: Mantap! Skor ${score}, teruskan ibadah konsisten.<br>`;
+    else if(score==3) html+=`${q.label}: Bagus, skor ${score}, ayo tingkatkan sedikit lagi.<br>`;
+    else html+=`${q.label}: Perlu ditingkatkan, skor ${score}, tetap semangat besok!<br>`;
   });
-  apresiasiHTML+='</div>';
-  dailyReport.innerHTML+=apresiasiHTML;
+  html+='</div>';
+  dailyReport.innerHTML=html;
 
   // --- Mingguan ---
-  weeklyReport.innerHTML='<table><tr><th>Week</th>';
-  questions.forEach(q=>weeklyReport.innerHTML+=`<th>${q.label}</th>`); weeklyReport.innerHTML+='</tr>';
+  let table=`<table><tr><th>Week</th>`;
+  questions.forEach(q=>table+=`<th>${q.label}</th>`); table+='</tr>';
   for(let w=1; w<=4; w++){
-    weeklyReport.innerHTML+=`<tr><td>Week ${w}</td>`;
+    table+=`<tr><td>Week ${w}</td>`;
     questions.forEach(q=>{
       let total=0,count=0;
       for(let d=(w-1)*7+1; d<=w*7; d++){
         const data=JSON.parse(localStorage.getItem(`day-${d}`))||{};
         const score=data[q.key]||0; total+=score; if(score) count++;
       }
-      weeklyReport.innerHTML+=`<td>${count? (total/count).toFixed(2):0}</td>`;
+      table+=`<td>${count? (total/count).toFixed(2):0}</td>`;
     });
-    weeklyReport.innerHTML+='</tr>';
+    table+='</tr>';
   }
+  table+='</table>';
+  weeklyReport.innerHTML=table;
 
   // --- Bulanan ---
-  monthlyReport.innerHTML='<table><tr><th>Hari</th>';
-  questions.forEach(q=>monthlyReport.innerHTML+=`<th>${q.label}</th>`); monthlyReport.innerHTML+='</tr>';
+  table=`<table><tr><th>Hari</th>`;
+  questions.forEach(q=>table+=`<th>${q.label}</th>`); table+='</tr>';
   for(let d=1; d<=daysInMonth; d++){
-    monthlyReport.innerHTML+=`<tr><td>${d}</td>`;
+    table+=`<tr><td>${d}</td>`;
     questions.forEach(q=>{
       const data=JSON.parse(localStorage.getItem(`day-${d}`))||{};
       const score=data[q.key]||0;
-      monthlyReport.innerHTML+=`<td>${score}</td>`;
+      table+=`<td>${score}</td>`;
     });
-    monthlyReport.innerHTML+='</tr>';
+    table+='</tr>';
   }
+  table+='</table>';
+  monthlyReport.innerHTML=table;
 }
 renderReports();
 
@@ -270,7 +273,7 @@ document.getElementById('generatePDF').addEventListener('click',()=>{
   const name=localStorage.getItem('taqwUser')||'User';
   const today=new Date();
   const daysInMonth=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
-  
+
   doc.setFontSize(16); 
   doc.text(`Assalamu'alaikum, ${name}`,40,40);
   doc.setFontSize(12);
@@ -278,18 +281,16 @@ document.getElementById('generatePDF').addEventListener('click',()=>{
   let startY=80;
 
   // Harian
-  doc.text('Raport Harian',40,startY); startY+=10;
   let tableHarian=[];
   questions.forEach(q=>{
     const data=JSON.parse(localStorage.getItem(`day-${today.getDate()}`))||{};
     const score=data[q.key]||0;
     tableHarian.push([q.label,score]);
   });
-  doc.autoTable({ startY:startY, head:[['Indikator','Skor Hari Ini']], body:tableHarian });
+  doc.autoTable({ startY:startY, head:[['Indikator','Skor Hari Ini']], body:tableHarian, styles:{fontSize:8}, columnStyles:{0:{cellWidth:120},1:{cellWidth:50}}, overflow:'linebreak' });
   startY=doc.lastAutoTable.finalY + 20;
 
   // Mingguan
-  doc.text('Raport Mingguan',40,startY); startY+=10;
   let tableMingguanHead=['Week']; questions.forEach(q=>tableMingguanHead.push(q.label));
   let tableMingguanBody=[];
   for(let w=1; w<=4; w++){
@@ -304,11 +305,10 @@ document.getElementById('generatePDF').addEventListener('click',()=>{
     });
     tableMingguanBody.push(row);
   }
-  doc.autoTable({ startY:startY, head:[tableMingguanHead], body:tableMingguanBody });
+  doc.autoTable({ startY:startY, head:[tableMingguanHead], body:tableMingguanBody, styles:{fontSize:8}, columnStyles:{0:{cellWidth:40}}, overflow:'linebreak' });
   startY=doc.lastAutoTable.finalY + 20;
 
   // Bulanan
-  doc.text('Raport Bulanan',40,startY); startY+=10;
   let tableBulananHead=['Hari']; questions.forEach(q=>tableBulananHead.push(q.label));
   let tableBulananBody=[];
   for(let d=1; d<=daysInMonth; d++){
@@ -320,7 +320,7 @@ document.getElementById('generatePDF').addEventListener('click',()=>{
     });
     tableBulananBody.push(row);
   }
-  doc.autoTable({ startY:startY, head:[tableBulananHead], body:tableBulananBody });
+  doc.autoTable({ startY:startY, head:[tableBulananHead], body:tableBulananBody, styles:{fontSize:8}, columnStyles:{0:{cellWidth:40}}, overflow:'linebreak' });
   startY=doc.lastAutoTable.finalY + 20;
 
   // Radar chart
