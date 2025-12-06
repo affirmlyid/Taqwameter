@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taqwameter Final HP Friendly</title>
+<title>Taqwameter</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -35,7 +35,7 @@ footer{text-align:center; padding:10px; background:#f0f4f8; color:#0b1f3f; font-
 <body>
 
 <header>
-  <h1>Taqwameter 🕌</h1>
+  <h1>Taqwameter</h1>
   <p id="greeting"></p>
   <input type="text" id="username" placeholder="Masukkan nama kamu" />
   <button id="saveNameBtn">Simpan Nama</button>
@@ -315,4 +315,24 @@ document.getElementById('generatePDF').addEventListener('click',()=>{
     let row=[d];
     questions.forEach(q=>{
       const data=JSON.parse(localStorage.getItem(`day-${d}`))||{};
-      const score=data[q.key]||
+      const score=data[q.key]||0;
+      row.push(score);
+    });
+    tableBulananBody.push(row);
+  }
+  doc.autoTable({ startY:startY, head:[tableBulananHead], body:tableBulananBody });
+  startY=doc.lastAutoTable.finalY + 20;
+
+  // Radar chart
+  const canvas=document.getElementById('radarChart');
+  const imgData=canvas.toDataURL('image/png');
+  doc.addPage();
+  doc.setFontSize(14);
+  doc.text('Radar Chart Skor Hari Ini',40,40);
+  doc.addImage(imgData,'PNG',40,60,500,300);
+
+  doc.save(`Raport_Taqwameter_${name}.pdf`);
+});
+</script>
+</body>
+</html>
