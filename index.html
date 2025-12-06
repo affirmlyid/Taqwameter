@@ -211,25 +211,28 @@ const monthlyReport=document.getElementById('monthlyReport');
 function renderReports(){
   const today=new Date();
   const daysInMonth=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
+// --- Harian ---
+let html=`<table><tr><th>Indikator</th><th>Skor Hari Ini</th></tr>`;
+let sumScore=0, countScore=0;
+questions.forEach(q=>{
+  const data=JSON.parse(localStorage.getItem(`day-${today.getDate()}`))||{};
+  const score=data[q.key]||0;
+  if(score>0){ sumScore+=score; countScore++; }
+  html+=`<tr><td>${q.label}</td><td>${score}</td></tr>`;
+});
+html+='</table>';
 
-  // --- Harian ---
-  let html=`<table><tr><th>Indikator</th><th>Skor Hari Ini</th></tr>`;
-  questions.forEach(q=>{
-    const data=JSON.parse(localStorage.getItem(`day-${today.getDate()}`))||{};
-    const score=data[q.key]||0;
-    html+=`<tr><td>${q.label}</td><td>${score}</td></tr>`;
-  });
-  html+='</table>';
-  html+='<div class="apresiasi"><b>Apresiasi & Motivasi Hari Ini:</b><br>';
-  questions.forEach(q=>{
-    const data=JSON.parse(localStorage.getItem(`day-${today.getDate()}`))||{};
-    const score=data[q.key]||0;
-    if(score>=4) html+=`${q.label}: Mantap! Skor ${score}, teruskan ibadah konsisten.<br>`;
-    else if(score==3) html+=`${q.label}: Bagus, skor ${score}, ayo tingkatkan sedikit lagi.<br>`;
-    else html+=`${q.label}: Perlu ditingkatkan, skor ${score}, tetap semangat besok!<br>`;
-  });
-  html+='</div>';
-  dailyReport.innerHTML=html;
+// --- Apresiasi & Motivasi Hari Ini ---
+let avgScore = countScore ? (sumScore/countScore).toFixed(2) : 0;
+let motivText='';
+if(avgScore>=4) motivText=`Skor kamu ${avgScore}, keren banget! 🎉`;
+else if(avgScore>=3) motivText=`Skor kamu ${avgScore}, bagus, ayo tingkatkan sedikit lagi! 💪`;
+else motivText=`Skor kamu ${avgScore}, tetap semangat besok! 🌱`;
+
+html+=`<div class="apresiasi"><b>${motivText}</b><br>`;
+html+=`Rekomendasi amalan hari ini: Perbanyak sedekah, sholat sunnah, atau yuk hari ini baca Al-Qur’an minimal 2 halaman.</div>`;
+
+dailyReport.innerHTML=html;
 
   // --- Mingguan ---
   let table=`<table><tr><th>Week</th>`;
