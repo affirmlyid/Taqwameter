@@ -9,25 +9,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-body { font-family:'Roboto', sans-serif; background:#f0f4f8; margin:0; padding:0; color:#333;}
-header { background:#4a6fa5; color:#fff; text-align:center; padding:1.5rem 1rem; font-family:'Amiri', serif;}
+body { font-family:'Roboto', sans-serif; background:#e3f2fd; margin:0; padding:0; color:#333;}
+header { background:#2196f3; color:#fff; text-align:center; padding:1.5rem 1rem; font-family:'Amiri', serif;}
 h1{margin:0.5rem 0;}
 .container{max-width:900px;margin:2rem auto;padding:1rem; position:relative;}
 .user-input { margin-bottom:1rem; display:flex; gap:1rem; align-items:center; justify-content:center;}
 input[type="text"]{padding:0.5rem; border-radius:5px; border:1px solid #ccc; width:200px;}
-button{padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; background:#4a6fa5; color:#fff; transition:0.2s;}
+button{padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; background:#2196f3; color:#fff; transition:0.2s;}
 button:hover{opacity:0.9;}
 .calendar{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:1rem;}
 .day{padding:10px; border-radius:5px; text-align:center; cursor:pointer; transition:0.3s all;}
-.day.filled{background:#a5d6a7; color:#fff;}
-.day.missed{background:#ffcdd2; color:#fff;}
-.day.active{background:#4a90e2; color:#fff;}
+.day.filled{background:#64b5f6; color:#fff;}
+.day.missed{background:#bbdefb; color:#333;}
+.day.active{background:#1976d2; color:#fff;}
 .day:hover{transform:scale(1.05);}
 .inline-form{display:none; background:#fff; padding:1rem; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom:1rem;}
 .indicator{margin-bottom:0.8rem;}
 .indicator label{display:block; margin-bottom:0.2rem;}
 .scale-btn{padding:0.3rem 0.5rem; margin-right:5px; border-radius:5px; border:1px solid #ccc; cursor:pointer; transition:0.2s;}
-.scale-btn.selected{background:#4a90e2; color:#fff;}
+.scale-btn.selected{background:#1976d2; color:#fff;}
 .radar-container{max-width:600px;margin:2rem auto;}
 .motivasi{margin:1rem 0; font-size:1.1rem; text-align:center; opacity:0; transition:opacity 0.5s;}
 .motivasi.show{opacity:1;}
@@ -35,7 +35,7 @@ button:hover{opacity:0.9;}
 .rekap-container table{width:100%; border-collapse:collapse; margin-bottom:1rem;}
 .rekap-container th, .rekap-container td{border:1px solid #ccc; padding:0.5rem; text-align:center;}
 .share-buttons{margin-top:1rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;}
-.share-buttons button{background:#4a6fa5; color:#fff; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer;}
+.share-buttons button{background:#2196f3; color:#fff; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer;}
 .cta{margin-top:2rem; text-align:center; font-weight:bold;}
 .cta button{background:#f57c00; color:#fff; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; margin-top:0.5rem;}
 .powered{position:absolute; bottom:-20px; left:0; right:0; text-align:center; font-size:0.9rem; color:#555;}
@@ -44,7 +44,7 @@ button:hover{opacity:0.9;}
 <body>
 <header>
 <h1>Taqwameter 🌙</h1>
-<p>Interaktif harian + rekap mingguan/bulanan</p>
+<p>Pantau Ibadahmu, Kuatkan Amalan, Capai Full Keberkahan ✨</p>
 </header>
 
 <div class="container">
@@ -102,10 +102,14 @@ const calendarEl = document.getElementById('calendar');
 const indicators = [
 {key:'ibadah', question:"Apakah shalat wajib hari ini sudah tertunaikan?"},
 {key:'alquran', question:"Berapa lama membaca Al-Qur’an hari ini?"},
-{key:'sosial', question:"Apakah kamu melakukan kebaikan sosial hari ini?"},
-{key:'selfcontrol', question:"Apakah kamu berhasil menahan diri dari hal buruk hari ini?"},
-{key:'attitude', question:"Apakah kamu bersikap sabar dan sopan hari ini?"},
-{key:'sedekah', question:"Apakah kamu menunaikan sedekah atau infak hari ini?"}
+{key:'sholatSunnah', question:"Apakah kamu menunaikan sholat sunnah hari ini?"},
+{key:'sikap', question:"Apakah kamu bersikap baik hari ini?"},
+{key:'selfControl', question:"Apakah kamu menahan diri dari hal buruk hari ini?"},
+{key:'confident', question:"Apakah kamu percaya diri dan optimis hari ini?"},
+{key:'produktif', question:"Apakah kamu produktif hari ini?"},
+{key:'sedekah', question:"Apakah kamu menunaikan sedekah atau infak hari ini?"},
+{key:'mental', question:"Bagaimana kondisi mentalmu hari ini?"},
+{key:'sosial', question:"Apakah kamu melakukan kebaikan sosial hari ini?"}
 ];
 let dailyScores = JSON.parse(localStorage.getItem('dailyScores')) || {};
 let selectedDay = null;
@@ -116,7 +120,12 @@ const dailyAyat = [
 "“Barang siapa memberi sedekah dengan ikhlas, Allah akan melipatgandakan pahala.”",
 "“Bacalah Al-Qur’an, karena ia akan datang pada hari kiamat sebagai pemberi syafaat.”",
 "“Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lain.”",
-"“Sesungguhnya shalat itu mencegah dari perbuatan keji dan mungkar.”"
+"“Sesungguhnya shalat itu mencegah dari perbuatan keji dan mungkar.”",
+"“Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya.”",
+"“Dan tolong-menolonglah kamu dalam kebaikan dan takwa.”",
+"“Sesungguhnya orang-orang yang bersabar akan mendapatkan pahala yang besar.”",
+"“Bacalah Al-Qur’an dengan tartil, maka hatimu akan tentram.”",
+"“Janganlah kamu meremehkan kebaikan sekecil apapun.”"
 ];
 
 // ====== Nama ======
@@ -134,7 +143,7 @@ function saveName(){
     }
 }
 
-// ====== Load nama jika ada ======
+// Load nama jika ada
 if(userName){
     document.getElementById('dynamicAyat').textContent = `Halo ${userName}, pilih tanggal untuk mengisi indikator harian 🌙`;
     document.getElementById('dynamicAyat').classList.add('show');
@@ -156,7 +165,7 @@ function generateCalendar(){
     updateCalendarHighlight();
 }
 
-// Update warna kalender
+// ====== Update warna kalender ======
 function updateCalendarHighlight(){
     Array.from(calendarEl.children).forEach(d=>{
         const day = parseInt(d.textContent);
@@ -232,10 +241,10 @@ const radarChart = new Chart(ctx,{
         datasets:[{
             label:'Skor Ibadah 1-5',
             data:Array(indicators.length).fill(0),
-            backgroundColor:'rgba(74,144,226,0.2)',
-            borderColor:'#4a90e2',
+            backgroundColor:'rgba(33,150,243,0.2)',
+            borderColor:'#1976d2',
             borderWidth:2,
-            pointBackgroundColor:'#4a90e2'
+            pointBackgroundColor:'#1976d2'
         }]
     },
     options:{animation:{duration:600,easing:'easeOutQuad'},scales:{r:{suggestedMin:0,suggestedMax:5}},plugins:{tooltip:{callbacks:{label:function(c){return c.label + ': ' + c.raw + ' 🌙';}}}}}
