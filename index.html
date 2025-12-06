@@ -3,336 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taqwameter - Ibadah Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Roboto&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<title>Taqwameter Live</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.css">
 <style>
-body { font-family:'Roboto', sans-serif; background:#e3f2fd; margin:0; padding:0; color:#333;}
-header { background:#0d47a1; color:#fff; text-align:center; padding:2rem 1rem; font-family:'Amiri', serif;}
-h1{margin:0.5rem 0;}
-.container{max-width:900px;margin:2rem auto;padding:1rem; position:relative;}
-.user-input { margin-bottom:1rem; display:flex; gap:1rem; align-items:center; justify-content:center;}
-input[type="text"]{padding:0.5rem; border-radius:5px; border:1px solid #ccc; width:200px;}
-button{padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; background:#0d47a1; color:#fff; transition:0.2s;}
-button:hover{opacity:0.9;}
-.calendar{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:1rem;}
-.day{padding:10px; border-radius:5px; text-align:center; cursor:pointer; transition:0.3s all;}
-.day.filled{background:#43a047; color:#fff;}
-.day.missed{background:#e53935; color:#fff;}
-.day.active{background:#1e88e5; color:#fff;}
-.day:hover{transform:scale(1.05);}
-.inline-form{display:none; background:#fff; padding:1rem; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); margin-bottom:1rem;}
-.indicator{margin-bottom:0.8rem;}
-.indicator label{display:block; margin-bottom:0.2rem;}
-.scale-btn{padding:0.3rem 0.5rem; margin-right:5px; border-radius:5px; border:1px solid #ccc; cursor:pointer; transition:0.2s;}
-.scale-btn.selected{background:#1e88e5; color:#fff;}
-.radar-container{max-width:600px;margin:2rem auto;}
-.motivasi{margin:1rem 0; font-size:1.1rem; text-align:center; opacity:0; transition:opacity 0.5s;}
-.motivasi.show{opacity:1;}
-.rekap-container{margin:2rem 0;}
-.rekap-container table{width:100%; border-collapse:collapse; margin-bottom:1rem;}
-.rekap-container th, .rekap-container td{border:1px solid #ccc; padding:0.5rem; text-align:center;}
-.share-buttons{margin-top:1rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;}
-.share-buttons button{background:#0d47a1; color:#fff; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer;}
-.cta{margin-top:2rem; text-align:center; font-weight:bold;}
-.cta button{background:#f57c00; color:#fff; border:none; padding:0.5rem 1rem; border-radius:5px; cursor:pointer; margin-top:0.5rem;}
-.powered{position:absolute; bottom:-20px; left:0; right:0; text-align:center; font-size:0.9rem; color:#555;}
+  body { font-family: Arial, sans-serif; background-color: #f0f4f8; color: #0a2540; margin:0; padding:0; }
+  header { background-color:#0b1f3f; color:#fff; padding:1rem; text-align:center; }
+  header input { padding:0.5rem; margin-top:0.5rem; border-radius:5px; border:none; width:200px; }
+  header button { padding:0.5rem 1rem; margin-left:5px; border:none; border-radius:5px; cursor:pointer; background-color:#fff;color:#0b1f3f; }
+  .calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; padding:1rem; }
+  .day { padding:1rem; border-radius:5px; cursor:pointer; text-align:center; font-weight:bold; transition:0.2s; }
+  .day.green{background-color:#4caf50;color:#fff;}
+  .day.red{background-color:#f44336;color:#fff;}
+  .day.today{border:2px solid #2196F3;}
+  .day:hover{transform:scale(1.1); box-shadow:0 0 10px rgba(0,0,0,0.3);}
+  .modal{display:none; position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5); justify-content:center; align-items:center;}
+  .modal-content{background:#fff;padding:2rem;border-radius:10px;width:90%; max-width:600px; max-height:90%; overflow-y:auto;}
+  button{padding:0.5rem 1rem; margin-top:1rem; cursor:pointer; background-color:#0b1f3f; color:#fff; border:none; border-radius:5px;}
+  .section{padding:1rem;}
+  .motivBanner{background:linear-gradient(90deg,#0b1f3f,#2196F3); color:#fff; padding:1rem; border-radius:10px; text-align:center; margin-bottom:1rem; font-weight:bold;}
 </style>
 </head>
 <body>
+
 <header>
-<h1>Taqwameter 🌙</h1>
-<p>Pantau Ibadahmu, Kuatkan Amalan, Capai Full Keberkahan ✨</p>
+  <h1>Taqwameter Live</h1>
+  <p id="greeting"></p>
+  <input type="text" id="username" placeholder="Masukkan nama kamu" />
+  <button id="saveNameBtn">Simpan Nama</button>
 </header>
 
-<div class="container">
-<div class="user-input">
-<input type="text" id="userNameInput" placeholder="Masukkan nama">
-<button onclick="saveName()">Simpan Nama</button>
+<section class="section">
+  <div class="motivBanner" id="motivBanner"></div>
+  <h2>Ayat Al-Qur'an Harian</h2>
+  <p id="dailyAyah">...</p>
+</section>
+
+<section class="section">
+  <h2>Kalender Ibadah</h2>
+  <div class="calendar" id="calendar"></div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modalDate">Tanggal</h3>
+    <form id="dailyForm">
+      <div id="questionsContainer"></div>
+      <button type="submit">Simpan Skor</button>
+    </form>
+  </div>
 </div>
 
-<div class="motivasi" id="dynamicAyat">🌟 Masukkan nama untuk mulai</div>
+<section class="section">
+  <h2>Radar Chart & Rekap</h2>
+  <canvas id="radarChart"></canvas>
+</section>
 
-<div class="calendar" id="calendar"></div>
+<section class="section">
+  <button id="generatePDF">Download PDF Raport</button>
+</section>
 
-<div class="inline-form" id="inlineForm">
-<h3>Pertanyaan indikator hari ini</h3>
-<div id="indicatorsContainer"></div>
-<button onclick="submitIndicators()">Simpan Skor</button>
-</div>
+<section class="section">
+  <h2>Share Progress</h2>
+  <button onclick="shareWA()">Share WA</button>
+  <button onclick="shareEmail()">Share Email</button>
+  <button onclick="shareIG()">Share IG</button>
+  <button onclick="shareTT()">Share TikTok</button>
+</section>
 
-<div class="radar-container">
-<canvas id="radarChart"></canvas>
-</div>
+<section class="section">
+  <button onclick="window.open('http://api.whatsapp.com/send/?phone=6285717115987')">Konsultasi Sekarang</button>
+</section>
 
-<div class="rekap-container">
-<h3>Rekap Mingguan</h3>
-<div id="weeklyTable"></div>
-<h3>Rekap Bulanan</h3>
-<div id="monthlyTable"></div>
-<button onclick="downloadPDF()">Download PDF Raport</button>
-<p style="text-align:center; font-size:0.9rem; color:#555; margin-top:0.5rem;">
-Powered by <strong>Affirmly</strong>
-</p>
-</div>
-
-<div class="share-buttons">
-<button onclick="shareWhatsApp()">Share WA</button>
-<button onclick="shareEmail()">Share Email</button>
-<button onclick="shareInstagram()">Share Instagram</button>
-<button onclick="shareTikTok()">Share TikTok</button>
-</div>
-
-<div class="cta">
-Kamu mau konsultasi langsung? Yuk ngobrol bareng 🌙✨
-<div>
-<button onclick="startConsult()">Konsultasi Sekarang</button>
-</div>
-</div>
-
-<div class="powered">Powered by <strong>Affirmly</strong></div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-// ====== Variabel Global ======
-let userName = localStorage.getItem('taqwaUserName') || "";
-const calendarEl = document.getElementById('calendar');
-const indicators = [
-{key:'ibadah', question:"Apakah shalat wajib hari ini sudah tertunaikan?"},
-{key:'alquran', question:"Berapa lama membaca Al-Qur’an hari ini? (QS. Al-Baqarah:43)"},
-{key:'sholatSunnah', question:"Apakah kamu menunaikan sholat sunnah hari ini?"},
-{key:'sikap', question:"Apakah kamu bersikap baik hari ini?"},
-{key:'selfControl', question:"Apakah kamu menahan diri dari hal buruk hari ini?"},
-{key:'confident', question:"Apakah kamu percaya diri dan optimis hari ini?"},
-{key:'produktif', question:"Apakah kamu produktif hari ini?"},
-{key:'sedekah', question:"Apakah kamu menunaikan sedekah atau infak hari ini?"},
-{key:'mental', question:"Bagaimana kondisi mentalmu hari ini?"},
-{key:'sosial', question:"Apakah kamu melakukan kebaikan sosial hari ini?"}
-];
-let dailyScores = JSON.parse(localStorage.getItem('dailyScores')) || {};
-let selectedDay = null;
-
-// Ayat harian
-const dailyAyat = [
-"“Dan dirikanlah shalat, tunaikanlah zakat.” (QS. Al-Baqarah:43)",
-"“Barang siapa memberi sedekah dengan ikhlas, Allah akan melipatgandakan pahala.” (QS. Al-Hadid:18)",
-"“Bacalah Al-Qur’an, karena ia akan datang pada hari kiamat sebagai pemberi syafaat.” (QS. Al-Furqan:30)",
-"“Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lain.” (HR. Ahmad)",
-"“Sesungguhnya shalat itu mencegah dari perbuatan keji dan mungkar.” (QS. Al-Ankabut:45)",
-"“Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya.” (QS. Al-Baqarah:286)",
-"“Dan tolong-menolonglah kamu dalam kebaikan dan takwa.” (QS. Al-Maidah:2)",
-"“Sesungguhnya orang-orang yang bersabar akan mendapatkan pahala yang besar.” (QS. Ali Imran:200)",
-"“Bacalah Al-Qur’an dengan tartil, maka hatimu akan tentram.” (QS. Al-Muzzammil:4)",
-"“Janganlah kamu meremehkan kebaikan sekecil apapun.” (QS. Al-Ma’un:1-3)"
-];
-
-// ====== Nama ======
-function saveName(){
-    const input = document.getElementById('userNameInput').value.trim();
-    if(input){
-        userName = input;
-        localStorage.setItem('taqwaUserName', userName);
-        document.getElementById('dynamicAyat').textContent = `Halo ${userName}, pilih tanggal untuk mengisi indikator harian 🌙`;
-        document.getElementById('dynamicAyat').classList.add('show');
-        document.getElementById('userNameInput').value = "";
-        generateCalendar();
-        updateCalendarHighlight();
-        generateRekap();
-    }
+// ====== User & Greeting ======
+const usernameInput=document.getElementById('username');
+const saveNameBtn=document.getElementById('saveNameBtn');
+const greeting=document.getElementById('greeting');
+function loadUsername(){
+  const name=localStorage.getItem('taqwUser');
+  if(name){usernameInput.value=name; greeting.innerText=`Assalamu'alaikum, ${name}! Semoga ibadahmu hari ini lancar.`;}
 }
+saveNameBtn.addEventListener('click',()=>{
+  const name=usernameInput.value.trim();
+  if(name){localStorage.setItem('taqwUser',name); loadUsername();}
+  else alert('Nama harus diisi!');
+});
+loadUsername();
 
-if(userName){
-    document.getElementById('dynamicAyat').textContent = `Halo ${userName}, pilih tanggal untuk mengisi indikator harian 🌙`;
-    document.getElementById('dynamicAyat').classList.add('show');
-    generateCalendar();
-    updateCalendarHighlight();
-    generateRekap();
-}
+// ====== Ayat Harian ======
+const ayatData=[
+{text:"Dan dirikanlah shalat...",source:"QS. Al-Baqarah:43"},
+{text:"Sesungguhnya shalat itu...",source:"QS. Al-Ma'idah:6"},
+{text:"Allah tidak membebani seseorang...",source:"QS. Al-Baqarah:286"}];
+const dailyAyah=document.getElementById('dailyAyah');
+function showDailyAyah(){ const day=new Date().getDate(); const ayah=ayatData[day%ayatData.length]; dailyAyah.innerText=`${ayah.text} (${ayah.source})`; }
+showDailyAyah();
+
+// ====== Motivasi Banner ======
+const motivBanner=document.getElementById('motivBanner');
+const banners=["✨ Tetap semangat shalat hari ini!","📖 Bacalah Al-Qur’an untuk hati yang tenang.","💰 Sedekah sedikit tiap hari, pahala besar!"];
+function showMotivBanner(){ const day=new Date().getDate(); motivBanner.innerText=banners[day%banners.length]; }
+showMotivBanner();
 
 // ====== Kalender ======
-function generateCalendar(){
-    calendarEl.innerHTML = "";
-    for(let i=1;i<=30;i++){
-        const day = document.createElement('div');
-        day.classList.add('day');
-        day.textContent = i;
-        day.addEventListener('click', ()=>openInlineForm(i));
-        calendarEl.appendChild(day);
-    }
-    updateCalendarHighlight();
+const calendar=document.getElementById('calendar');
+const questions=['Ibadah wajib','Al-Qur’an','Sholat sunnah','Sikap','Self-control','Confident','Produktivitas','Sedekah','Kondisi mental','Kebaikan sosial'];
+const questionIcons={'Ibadah wajib':'🕌','Al-Qur’an':'📖','Sholat sunnah':'🙏','Sikap':'🙂','Self-control':'🧘‍♂️','Confident':'💪','Produktivitas':'📈','Sedekah':'💰','Kondisi mental':'🧠','Kebaikan sosial':'🤝'};
+function renderCalendar(){
+  const daysInMonth=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
+  const todayDate=new Date().getDate();
+  calendar.innerHTML='';
+  for(let d=1; d<=daysInMonth; d++){
+    const dayDiv=document.createElement('div');
+    dayDiv.className='day';
+    const key=`day-${d}`;
+    const filled=localStorage.getItem(key);
+    dayDiv.classList.add(filled?'green':'red');
+    if(d===todayDate) dayDiv.classList.add('today');
+    dayDiv.innerText=d;
+    dayDiv.title = filled ? "✅ Skor hari ini tersimpan" : "❌ Belum mengisi skor";
+    dayDiv.addEventListener('click',()=>openModal(d));
+    calendar.appendChild(dayDiv);
+  }
 }
+renderCalendar();
 
-// ====== Update warna kalender ======
-function updateCalendarHighlight(){
-    Array.from(calendarEl.children).forEach(d=>{
-        const day = parseInt(d.textContent);
-        d.classList.remove('filled','missed','active');
-        if(selectedDay===day) d.classList.add('active');
-        else if(dailyScores[day]) d.classList.add('filled');
-        else d.classList.add('missed');
-    });
-}
-
-// ====== Inline Form ======
-function openInlineForm(day){
-    if(!userName){ alert("Silakan isi nama terlebih dahulu!"); return; }
-    selectedDay = day;
-    updateCalendarHighlight();
-    const formEl = document.getElementById('inlineForm');
-    const container = document.getElementById('indicatorsContainer');
-    container.innerHTML = "";
-    indicators.forEach((ind, idx)=>{
-        const div = document.createElement('div');
-        div.classList.add('indicator');
-        const label = document.createElement('label');
-        label.textContent = ind.question;
-        div.appendChild(label);
-        for(let s=1; s<=5; s++){
-            const btn = document.createElement('button');
-            btn.classList.add('scale-btn');
-            btn.textContent = s;
-            btn.addEventListener('click', ()=>selectScore(day, ind.key, s, div));
-            div.appendChild(btn);
-        }
-        container.appendChild(div);
-    });
-    if(dailyScores[day]){
-        indicators.forEach((ind, idx)=>{
-            if(dailyScores[day][ind.key]){
-                const btns = container.children[idx].querySelectorAll('.scale-btn');
-                btns[dailyScores[day][ind.key]-1].classList.add('selected');
-            }
-        });
-    }
-    formEl.style.display='block';
-}
-
-// ====== Pilih skor ======
-function selectScore(day, key, score, div){
-    if(!dailyScores[day]) dailyScores[day] = {};
-    dailyScores[day][key] = score;
-    localStorage.setItem('dailyScores', JSON.stringify(dailyScores));
-    const btns = div.querySelectorAll('.scale-btn');
-    btns.forEach(b=>b.classList.remove('selected'));
-    btns[score-1].classList.add('selected');
-    updateRadar(day);
-    updateAnalysis(day);
-    updateCalendarHighlight();
-    generateRekap();
-}
-
-// ====== Submit Form ======
-function submitIndicators(){
-    document.getElementById('inlineForm').style.display='none';
-    selectedDay=null;
-    updateCalendarHighlight();
-    generateRekap();
+// ====== Modal ======
+const modal=document.getElementById('modal');
+const modalDate=document.getElementById('modalDate');
+const questionsContainer=document.getElementById('questionsContainer');
+const dailyForm=document.getElementById('dailyForm');
+function openModal(day){
+  if(!localStorage.getItem('taqwUser')) return alert('Isi nama dulu!');
+  modal.style.display='flex';
+  modalDate.innerText=`Tanggal ${day}`;
+  questionsContainer.innerHTML='';
+  questions.forEach(q=>{ questionsContainer.innerHTML+=`<label>${questionIcons[q]} ${q} (1-5)</label><input type="number" min="1" max="5" name="${q}" required />`; });
+  dailyForm.onsubmit=function(e){
+    e.preventDefault();
+    const data={};
+    questions.forEach(q=>data[q]=parseInt(this[q].value));
+    localStorage.setItem(`day-${day}`,JSON.stringify(data));
+    modal.style.display='none';
+    renderCalendar();
+    updateRadarAndAnalysis(day);
+  }
 }
 
 // ====== Radar Chart ======
-const ctx = document.getElementById('radarChart').getContext('2d');
-const radarChart = new Chart(ctx,{
-    type:'radar',
-    data:{
-        labels: indicators.map(i=>i.key),
-        datasets:[{
-            label:'Skor Ibadah 1-5',
-            data:Array(indicators.length).fill(0),
-            backgroundColor:'rgba(33,150,243,0.2)',
-            borderColor:'#1e88e5',
-            borderWidth:2,
-            pointBackgroundColor:'#1e88e5'
-        }]
-    },
-    options:{animation:{duration:600,easing:'easeOutQuad'},scales:{r:{suggestedMin:0,suggestedMax:5}},plugins:{tooltip:{callbacks:{label:function(c){return c.label + ': ' + c.raw + ' 🌙';}}}}}
-});
+const ctx=document.getElementById('radarChart').getContext('2d');
+let radarChart=new Chart(ctx,{ type:'radar', data:{ labels:questions, datasets:[{label:'Skor Harian', data:Array(questions.length).fill(0), backgroundColor:'rgba(11,31,63,0.2)', borderColor:'rgba(11,31,63,1)', borderWidth:2, pointStyle:["🕌","📖","🙏","🙂","🧘‍♂️","💪","📈","💰","🧠","🤝"], pointRadius:10 }]}, options:{scales:{r:{beginAtZero:true,min:0,max:5}}} });
+function updateRadar(){ const today=new Date().getDate(); const data=JSON.parse(localStorage.getItem(`day-${today}`))||{}; radarChart.data.datasets[0].data=questions.map(q=>data[q]||0); radarChart.update(); }
 
-function updateRadar(day){
-    if(!dailyScores[day]) return;
-    radarChart.data.datasets[0].data = indicators.map(i=>dailyScores[day][i.key] || 0);
-    radarChart.update();
-}
-
-// ====== Analisis ======
-function updateAnalysis(day){
-    if(!dailyScores[day]) return;
-    const scores = indicators.map(i=>dailyScores[day][i.key] || 0);
-    const minScore = Math.min(...scores);
-    const minIdx = scores.indexOf(minScore);
-    const activity = indicators[minIdx].key;
-    const ayat = dailyAyat[day % dailyAyat.length];
-    const msg = `🌟 Hari ke-${day} untuk ${userName}, fokus pada "${activity}", ${ayat}`;
-    const elem = document.getElementById('dynamicAyat');
-    elem.textContent = msg;
-    elem.classList.remove('show');
-    setTimeout(()=>elem.classList.add('show'),50);
+// ====== Analisis & Rekomendasi ======
+function analyzeScore(day){
+  const data=JSON.parse(localStorage.getItem(`day-${day}`))||{};
+  let messages=[]; let recommendations=[];
+  questions.forEach(q=>{ const score=data[q]||0; if(score<=2){ messages.push(`Indikator "${q}" bisa ditingkatkan.`); switch(q){ case 'Ibadah wajib': recommendations.push('Perbanyak fokus shalat tepat waktu dan khusyuk.'); break; case 'Al-Qur’an': recommendations.push('Baca minimal 1 halaman Al-Qur’an dan tadabbur.'); break; case 'Sholat sunnah': recommendations.push('Tambahkan sholat sunnah rawatib.'); break; case 'Sikap': recommendations.push('Latih sabar dan toleransi.'); break; case 'Self-control': recommendations.push('Hindari hal-hal yang memicu emosi negatif.'); break; case 'Confident': recommendations.push('Tingkatkan percaya diri melalui dzikir dan doa.'); break; case 'Produktivitas': recommendations.push('Buat daftar prioritas ibadah & kerjaan.'); break; case 'Sedekah': recommendations.push('Sisihkan sedikit rezeki setiap hari untuk sedekah.'); break; case 'Kondisi mental': recommendations.push('Dzikir untuk menenangkan hati.'); break; case 'Kebaikan sosial': recommendations.push('Lakukan 1 kebaikan sosial tiap hari.'); break;}}});
+  return {messages:messages.length?messages:['Semua indikator bagus hari ini, tetap pertahankan!'], recommendations:[...new Set(recommendations)]};
 }
 
 // ====== Rekap ======
-function generateRekap(){
-    if(!userName) return;
-    let weeklyScores = [];
-    let monthlyScores = [];
-    for(let w=0; w<4; w++){
-        let weekSum = {}; indicators.forEach(i=>weekSum[i.key]=0);
-        let weekCount = 0;
-        for(let d=w*7+1; d<=Math.min((w+1)*7,30); d++){
-            if(dailyScores[d]){
-                indicators.forEach(i=>weekSum[i.key]+=dailyScores[d][i.key]);
-                weekCount++;
-            }
-        }
-        let weekAvg = {};
-        indicators.forEach(i=>weekAvg[i.key] = weekCount>0 ? (weekSum[i.key]/weekCount).toFixed(2) : '-');
-        weeklyScores.push(weekAvg);
-    }
-    let monthSum = {}; indicators.forEach(i=>monthSum[i.key]=0);
-    let monthCount = 0;
-    for(let d=1; d<=30; d++){
-        if(dailyScores[d]){
-            indicators.forEach(i=>monthSum[i.key]+=dailyScores[d][i.key]);
-            monthCount++;
-        }
-    }
-    let monthAvg = {}; indicators.forEach(i=>monthAvg[i.key] = monthCount>0 ? (monthSum[i.key]/monthCount).toFixed(2) : '-');
-    monthlyScores = monthAvg;
+function getWeeklyMonthlySummary(){
+  const today=new Date(); const currentDay=today.getDate();
+  let weeklyScores=[]; let monthlyScores=[];
+  for(let d=1; d<=currentDay; d++){ const data=JSON.parse(localStorage.getItem(`day-${d}`))||{}; const dayAvg=questions.reduce((sum,q)=>sum+(data[q]||0),0)/questions.length; monthlyScores.push(dayAvg); if(d>currentDay-7) weeklyScores.push(dayAvg); }
+  const weeklyAvg=weeklyScores.length?(weeklyScores.reduce((a,b)=>a+b,0)/weeklyScores.length).toFixed(2):0;
+  const monthlyAvg=monthlyScores.length?(monthlyScores.reduce((a,b)=>a+b,0)/monthlyScores.length).toFixed(2):0;
+  return {weeklyAvg,monthlyAvg};
+}
 
-    let weekHTML = `<table><tr><th>Minggu</th>${indicators.map(i=>`<th>${i.key}</th>`).join('')}</tr>`;
-    weeklyScores.forEach((w,i)=>{ weekHTML += `<tr><td>${i+1}</td>${indicators.map(ind=>`<td>${w[ind.key]}</td>`).join('')}</tr>`; });
-    weekHTML += `</table>`;
-    document.getElementById('weeklyTable').innerHTML = weekHTML;
-
-    let monthHTML = `<table><tr><th>Bulan</th>${indicators.map(i=>`<th>${i.key}</th>`).join('')}</tr>`;
-    monthHTML += `<tr><td>1</td>${indicators.map(ind=>`<td>${monthlyScores[ind.key]}</td>`).join('')}</tr></table>`;
-    document.getElementById('monthlyTable').innerHTML = monthHTML;
+// ====== Update Radar + Analisis ======
+const motivationalAyah=["Sesungguhnya Allah tidak membebani seseorang melainkan sesuai dengan kesanggupannya (QS. Al-Baqarah:286)","Dan dirikanlah shalat, tunaikan zakat dan ruku’lah beserta orang-orang yang ruku’ (QS. Al-Baqarah:43)","Allah mengetahui apa yang ada di langit dan di bumi, dan Allah Maha Mengetahui segala sesuatu (QS. Al-Hujurat:18)"];
+function getMotivationalAyah(){return motivationalAyah[new Date().getDate()%motivationalAyah.length];}
+function updateRadarAndAnalysis(day){
+  updateRadar();
+  const analysis=analyzeScore(day);
+  const summary=getWeeklyMonthlySummary();
+  alert(`🌟 Alhamdulillah, ${localStorage.getItem('taqwUser')}!\n${analysis.messages.join('\n')}\n\n✅ Rekomendasi Amalan Hari Ini:\n- ${analysis.recommendations.join('\n- ')}\n\n📊 Skor Mingguan: ${summary.weeklyAvg}\n📈 Skor Bulanan: ${summary.monthlyAvg}`);
 }
 
 // ====== PDF ======
-function downloadPDF(){
-    if(!userName){ alert("Silakan isi nama terlebih dahulu!"); return; }
-    const { jsPDF } = window.jspdf;
-    html2canvas(document.querySelector('.container')).then(canvas=>{
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p','mm','a4');
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
-        pdf.save(`${userName}_Taqwameter.pdf`);
-    });
-}
+document.getElementById('generatePDF').addEventListener('click',async()=>{
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF();
+  const name=localStorage.getItem('taqwUser')||'User';
+  const today=new Date().getDate();
+  doc.text(`Assalamu'alaikum ${name}`,10,10);
+  doc.text('Alhamdulillah ini hasil skor ibadah harian:',10,20);
+  const dayData=JSON.parse(localStorage.getItem(`day-${today}`))||{};
+  let y=30;
+  questions.forEach(q=>{doc.text(`${q}: ${dayData[q]||'-'}`,10,y); y+=10;});
+  const analysis=analyzeScore(today);
+  const summary=getWeeklyMonthlySummary();
+  doc.text(`\nHasil Analisis:`,10,y); y+=10; analysis.messages.forEach(msg=>{doc.text(`- ${msg}`,10,y); y+=10;});
+  doc.text(`\nRekomendasi Amalan:`,10,y); y+=10; analysis.recommendations.forEach(rec=>{doc.text(`- ${rec}`,10,y); y+=10;});
+  doc.text(`\nSkor Mingguan: ${summary.weeklyAvg}`,10,y); y+=10;
+  doc.text(`Skor Bulanan: ${summary.monthlyAvg}`,10,y); y+=10;
+  doc.text(`\nAyat Motivasi: ${getMotivationalAyah()}`,10,y); y+=20;
+  const canvas=document.getElementById('radarChart'); const imgData=canvas.toDataURL('image/png'); doc.addImage(imgData,'PNG',10,y,180,100);
+  doc.save('taqwamenter-raport.pdf');
+});
 
-// ====== Share & CTA ======
-function shareWhatsApp(){window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(userName+" progress ibadah saya di Taqwameter! 🌙")}`,'_blank');}
-function shareEmail(){window.open(`mailto:?subject=${encodeURIComponent(userName+" Progress Ibadah 🌙")}&body=${encodeURIComponent("Lihat progress ibadah saya di Taqwameter!")}`);}
-function shareInstagram(){window.open(`https://www.instagram.com/`, '_blank');}
-function shareTikTok(){window.open(`https://www.tiktok.com/`, '_blank');}
-function startConsult(){window.open(`http://api.whatsapp.com/send/?phone=6285717115987`,'_blank');}
-
-// ====== Init ======
-generateRekap();
+// ====== Share ======
+function shareWA(){window.open('https://wa.me/?text=Check+my+progress');}
+function shareEmail(){window.location.href='mailto:?subject=Taqwameter Progress';}
+function shareIG(){window.open('https://instagram.com');}
+function shareTT(){window.open('https://tiktok.com');}
 </script>
+
 </body>
 </html>
